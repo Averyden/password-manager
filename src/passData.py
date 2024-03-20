@@ -5,8 +5,15 @@ class PassData():
         self.db = sqlite3.connect("assets/passData.db")
 
         
-    def createUser(self):
+    def getUserFromID(self, id):
         pass
+
+    def createUser(self, name="", email="", password=""): #? Maybe encrypt passwords, so they arent in plain text?
+        print("Registering new user...")
+        c.self.db.cursor()
+        c.excecute('''INSERT INTO Users (name, email, password) VALUES (?,?,?)''', [name,email,password]) 
+        self.db.commit()
+
 
     def createPassword(self, password="", owner="", service="", locked=0):
         print("Creating new password for user...")
