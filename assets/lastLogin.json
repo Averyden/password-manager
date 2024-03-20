@@ -1,5 +1,6 @@
 {
-    "LastLoggedUser": [
-        {"Loggedin": "false", "lastLoggedUser": "None"}
-    ]
+    "LastLoggedUser": {
+        "Loggedin": false,
+        "lastLoggedUser": "None"
+    }
 }
