@@ -8,8 +8,14 @@ class PassData():
     def createUser(self):
         pass
 
-    def createPassword(self):
-        pass
+    def createPassword(self, password="", owner="", service="", locked=0):
+        print("Creating new password for user...")
+        if len(owner) == 0:
+            print("Can't create new password. \n \nOwner value can't be of null.")
+        else:
+            c = self.db.cursor()
+            c.execute('''INSERT INTO Passwords (owner, service, password, locked) VALUES (?,?,?,?)''', [owner, service, password, locked])
+            self.db.commit()
 
     def deleteUser(self):
         pass #! MAKE SURE IT ALSO DELETES ALL THE PASSWORDS ASSOCIATED TO THE SAME USER
@@ -23,7 +29,7 @@ class PassData():
     def updateUser(self): #* Updating user details incase they get a new email.
         pass
 
-    
+
     def createTables(self):
         c = self.db.cursor()
         try: 
@@ -35,7 +41,7 @@ class PassData():
                 password TEXT);
             ''')
         except:
-            print("Table 'Users' already exists... \n Passing...")
+            print("Table 'Users' already exists... \nPassing...")
 
         try: #* Table to store each user's passwords
             c.execute('''
@@ -49,7 +55,7 @@ class PassData():
                 #* So good ol' INT coming to save the day here.
                 #* 0 for false, 1 for true.   
         except:
-            print("Table 'Passwords' already exists... \n Passing...")
+            print("Table 'Passwords' already exists... \nPassing...")
             
 
         self.db.commit()
