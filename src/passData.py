@@ -1,8 +1,8 @@
 import sqlite3
 
-class passData():
+class PassData():
     def __init__(self):
-        self.db = sqlite3.connect("assets/passData.py")
+        self.db = sqlite3.connect("assets/passData.db")
 
         
     def createTables(self):
