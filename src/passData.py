@@ -6,12 +6,15 @@ class PassData():
 
         
     def getUserFromID(self, id):
-        pass
+        print("Fetching username based on UID...")
+        c = self.db.cursor()
+        c.execute("""SELECT name FROM Users WHERE id = ?""", [id])
+        print(c.fetchall[0])
 
     def createUser(self, name="", email="", password=""): #? Maybe encrypt passwords, so they arent in plain text?
         print("Registering new user...")
-        c.self.db.cursor()
-        c.excecute('''INSERT INTO Users (name, email, password) VALUES (?,?,?)''', [name,email,password]) 
+        c = self.db.cursor()
+        c.execute('''INSERT INTO Users (name, email, password) VALUES (?,?,?)''', [name,email,password]) 
         self.db.commit()
 
 
