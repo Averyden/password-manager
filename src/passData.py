@@ -1,4 +1,11 @@
 import sqlite3
+import json
+
+try:
+    with open("assets/lastLogin.json") as lastLogin:
+        lastLoggedUser = json.load(lastLogin)
+except Exception as e:
+    print("Error loading JSON:", e)
 
 class PassData():
     def __init__(self):
@@ -37,12 +44,21 @@ class PassData():
         try:
             c.execute("""SELECT password FROM Users WHERE name = ?""", [userName])
             if c.fetchone() is not None and c.fetchone()[0] == password:
+                cid = self.db.cursor()
+                cid.execute("""SELECT id FROM Users WHERE name = ?""", [userName])
                 print("Valid credentials... \nLogging in...")   
                 validLogin = True
+                lastLoggedUser["LastLogDict"]["Loggedin"] = True
+                fetchID = cid.fetchone()
+                if cid is not None:
+                    lastLoggedUser["LastLogDict"]["lastLoggedUser"] = fetchID[0]
             else: 
                 print(f"Invalid credentials for user {userName}... \n")
         except Exception as e:
             print("Error during login:", e)
+
+        with open("assets/lastLogin.json", "w") as lastLogin:
+            json.dump(lastLoggedUser, lastLogin)
         
         return validLogin
             
