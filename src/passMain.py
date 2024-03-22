@@ -26,14 +26,16 @@ class PassManger(tk.Frame):
         self.updateLabels()
 
     def updateLabels(self):
+        self.buildUIStart1() #? would this create two windows?
         if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
             self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['Loggedin'])}.")
 
-    def toggleLog(self):
-        if lastLoggedUser["LastLogDict"]["Loggedin"] == False:
-            lastLoggedUser["LastLogDict"]["Loggedin"] = True
-        else: 
-            lastLoggedUser["LastLogDict"]["Loggedin"] = False
+    def logOut(self):
+        lastLoggedUser["LastLogDict"]["Loggedin"] = False
+        lastLoggedUser["LastLogDict"]["lastLogeedUser"] = "none"
+        
+        with open("assets/lastLogin.json", "w") as lastLogin:
+            json.dump(lastLoggedUser, lastLogin, indent=4)
 
     def sendLoginDetails(self):
         usernameToSend = self.userNameEntry.get()
