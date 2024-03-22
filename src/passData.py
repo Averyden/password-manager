@@ -11,6 +11,8 @@ class PassData():
     def __init__(self):
         self.db = sqlite3.connect("assets/passData.db")
 
+        self.loginIssue = "" #* Set to a global var so it can be called from the main code.
+
         
     def getUserFromID(self, id):
         print("Fetching username based on UID...")
@@ -28,6 +30,7 @@ class PassData():
 
     def loginUser(self, userName="", password=""):
         validLogin = False #* Bool to check at the end of function
+        self.loginIssue = "" #* String to return incase logging in fails.
         print(f"Checking credentials for username {userName}...\n")
         if len(userName) <= 2:
             print("Invalid username...\n")
@@ -56,10 +59,13 @@ class PassData():
 
                     else: 
                         print(f"Failed to retrieve user ID for {userName}...")
+                        self.loginIssue = "Error while logging in."
                 else:
                     print(f"Invalid credentials for user {userName}... \n")
+                    self.loginIssue = "Invalid username or password."
             else:
                 print("User does not exist.")
+                self.loginIssue = "Invalid username or password."
 
         except Exception as e:
             print("Error during login:", e)
@@ -67,7 +73,7 @@ class PassData():
         with open("assets/lastLogin.json", "w") as lastLogin:
             json.dump(lastLoggedUser, lastLogin, indent=4)
         
-        return validLogin
+        return validLogin, self.loginIssue
             
 
     def createPassword(self, password="", owner="", service="", locked=0):
