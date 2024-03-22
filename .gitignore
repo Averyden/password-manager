@@ -161,3 +161,4 @@ cython_debug/
 assets/passData.db
 .gitignore
 .DS_Store
+assets/lastLogin.json
