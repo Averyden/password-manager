@@ -26,12 +26,13 @@ class PassManger(tk.Frame):
         self.updateLabels()
 
     def updateLabels(self):
+        self.lblAccountIssue.configure(text=f"{data.loginIssue}")
         if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
             self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['Loggedin'])}.")
 
     def logOut(self):
         lastLoggedUser["LastLogDict"]["Loggedin"] = False
-        lastLoggedUser["LastLogDict"]["lastLogeedUser"] = "none"
+        lastLoggedUser["LastLogDict"]["lastLoggedUser"] = "none"
         
         with open("assets/lastLogin.json", "w") as lastLogin:
             json.dump(lastLoggedUser, lastLogin, indent=4)
@@ -40,6 +41,7 @@ class PassManger(tk.Frame):
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
         data.loginUser(userName=usernameToSend, password=passwordToSend)
+        self.updateLabels()
 
 
     def buildUIStart1(self): 
@@ -65,11 +67,14 @@ class PassManger(tk.Frame):
             #? Depends on if TKinter allows that.
             self.passwordEntry.grid(row=4, column=0, columnspan=2)
 
+            self.lblAccountIssue = ttk.Label(self.Frame, text="")
+            self.lblAccountIssue.grid(row=5, column=0, columnspan=2)
+
             self.btnLogin = ttk.Button(self.Frame, text="Log in", command=self.sendLoginDetails) 
-            self.btnLogin.grid(row=5, column=0)
+            self.btnLogin.grid(row=6, column=0)
 
             self.btnRegister = ttk.Button(self.Frame, text="Create account", command=None) #! Pass for now
-            self.btnRegister.grid(row=5, column=1)
+            self.btnRegister.grid(row=6, column=1)
 
         else:
             print("Wow!")
