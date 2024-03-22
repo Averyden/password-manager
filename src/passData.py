@@ -38,27 +38,34 @@ class PassData():
         c = self.db.cursor()
         try:
             c.execute("""SELECT name FROM Users WHERE name = ?""", [userName])
-        except Exception as e:
-            print("User does not exist:", e)
+            fetchedName = c.fetchone()
 
-        try:
-            c.execute("""SELECT password FROM Users WHERE name = ?""", [userName])
-            if c.fetchone() is not None and c.fetchone()[0] == password:
-                cid = self.db.cursor()
-                cid.execute("""SELECT id FROM Users WHERE name = ?""", [userName])
-                print("Valid credentials... \nLogging in...")   
-                validLogin = True
-                lastLoggedUser["LastLogDict"]["Loggedin"] = True
-                fetchID = cid.fetchone()
-                if cid is not None:
-                    lastLoggedUser["LastLogDict"]["lastLoggedUser"] = fetchID[0]
-            else: 
-                print(f"Invalid credentials for user {userName}... \n")
+            if fetchedName is not None: #! Username is correct, move on to checking the password.
+                c.execute("""SELECT password FROM Users WHERE name = ?""", [userName])
+                fetchedPass = c.fetchone()
+                
+                if fetchedPass is not None and fetchedPass[0] == password: #! Password is correct, and exists, move on.
+                    c.execute("""SELECT id FROM Users WHERE name = ?""", [userName])
+                    fetchedID = c.fetchone()
+
+                    if fetchedID is not None: #! the UID does exist, now write to JSON file.
+                        validLogin = True
+                        lastLoggedUser["LastLogDict"]["Loggedin"] = True
+                        lastLoggedUser["LastLogDict"]["lastLoggedUser"] = fetchedID[0]
+                        print("Valid credentials... \nLogging in...")
+
+                    else: 
+                        print(f"Failed to retrieve user ID for {userName}...")
+                else:
+                    print(f"Invalid credentials for user {userName}... \n")
+            else:
+                print("User does not exist.")
+
         except Exception as e:
             print("Error during login:", e)
 
         with open("assets/lastLogin.json", "w") as lastLogin:
-            json.dump(lastLoggedUser, lastLogin)
+            json.dump(lastLoggedUser, lastLogin, indent=4)
         
         return validLogin
             
