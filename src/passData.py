@@ -24,22 +24,25 @@ class PassData():
         print(f"Checking credentials for username {userName}...\n")
         if len(userName) <= 2:
             print("Invalid username...\n")
-        
+            
         if len(password) <= 2:
             print("Invalid password requested...\n")
 
-        c = self.db.cursor
+        c = self.db.cursor()
         try:
             c.execute("""SELECT name FROM Users WHERE name = ?""", [userName])
         except Exception as e:
             print("User does not exist:", e)
 
-        c.execute("""SELECT password FROM Users WHERE name = ?""", [userName])
-        if c.fetchone[0] == password:
-            validLogin = True
-            print("Valid credentials... \nLogging in...")
-        else: 
-            print(f"Invalid credentials for user {userName}... \n")
+        try:
+            c.execute("""SELECT password FROM Users WHERE name = ?""", [userName])
+            if c.fetchone() is not None and c.fetchone()[0] == password:
+                print("Valid credentials... \nLogging in...")   
+                validLogin = True
+            else: 
+                print(f"Invalid credentials for user {userName}... \n")
+        except Exception as e:
+            print("Error during login:", e)
         
         return validLogin
             
