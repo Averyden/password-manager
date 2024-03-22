@@ -17,23 +17,23 @@ except Exception as e:
     print("Error loading JSON:", e)
 
 class PassManger(tk.Frame):  
-    def __init__(self, root):
-        tk.Frame.__init__(self, root)  
-        self.root = root
-        self.root.title("TestApp for passDB")
+    def __init__(self):
+        tk.Frame.__init__(self)
+        # self.root = root
+       # self.root.title("TestApp for passDB")
         self.buildUIStart1()
 
     def toggleLog(self):
-        if lastLoggedUser["LastLoggedUser"]["Loggedin"] == False:
-            lastLoggedUser["LastLoggedUser"]["Loggedin"] = True
+        if lastLoggedUser["LastLogDict"]["Loggedin"] == False:
+            lastLoggedUser["LastLogDict"]["Loggedin"] = True
         else: 
-            lastLoggedUser["LastLoggedUser"]["Loggedin"] = False
+            lastLoggedUser["LastLogDict"]["Loggedin"] = False
 
     def buildUIStart1(self): 
         self.Frame = tk.Frame(self)
         self.Frame.grid(column=0, row=0)
 
-        if lastLoggedUser["LastLoggedUser"]["Loggedin"] == False: #* Check if a user was seen logged in, if not, prompt with buttons
+        if lastLoggedUser["LastLogDict"]["Loggedin"] == False: #* Check if a user was seen logged in, if not, prompt with buttons
             print("No user found to be logged in since last time running")
             self.lblSlct = ttk.Label(self.Frame, text="Select an option for user handling.")
             self.lblSlct.grid(column=0, row=0, columnspan=2)
@@ -48,6 +48,8 @@ class PassManger(tk.Frame):
         
         self.btnToggle.grid(column=0, row=1, columnspan=2)
 
-root = tk.Tk()
-app = PassManger(root)
-app.mainloop()
+        self.pack()
+
+prg = PassManger()
+prg.master.title('PasManJSONTest')
+prg.mainloop()
