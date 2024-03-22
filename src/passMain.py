@@ -26,7 +26,6 @@ class PassManger(tk.Frame):
         self.updateLabels()
 
     def updateLabels(self):
-        self.buildUIStart1() #? would this create two windows?
         if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
             self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['Loggedin'])}.")
 
@@ -77,7 +76,7 @@ class PassManger(tk.Frame):
             self.lblSlct = ttk.Label(self.Frame, text="Welcome.. if you see this, the update label function failed...")
             self.lblSlct.grid(column=0, row=0, columnspan=2)
 
-            self.btnToggle = ttk.Button(self.Frame, text="Log out", command=self.toggleLog)
+            self.btnToggle = ttk.Button(self.Frame, text="Log out", command=self.logOut)
             self.btnToggle.grid(column=0, row=1, columnspan=2)
         
         
