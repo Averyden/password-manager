@@ -9,7 +9,9 @@ class PassData():
         print("Fetching username based on UID...")
         c = self.db.cursor()
         c.execute("""SELECT name FROM Users WHERE id = ?""", [id])
-        print(c.fetchall[0])
+        fetchedUser = c.fetchone()
+        print(fetchedUser[0])
+        return fetchedUser[0]
 
     def createUser(self, name="", email="", password=""): #? Maybe encrypt passwords, so they arent in plain text?
         print("Registering new user...")
@@ -17,6 +19,30 @@ class PassData():
         c.execute('''INSERT INTO Users (name, email, password) VALUES (?,?,?)''', [name,email,password]) 
         self.db.commit()
 
+    def loginUser(self, userName="", password=""):
+        validLogin = False #* Bool to check at the end of function
+        print(f"Checking credentials for username {userName}...\n")
+        if len(userName) <= 2:
+            print("Invalid username...\n")
+        
+        if len(password) <= 2:
+            print("Invalid password requested...\n")
+
+        c = self.db.cursor
+        try:
+            c.execute("""SELECT name FROM Users WHERE name = ?""", [userName])
+        except Exception as e:
+            print("User does not exist:", e)
+
+        c.execute("""SELECT password FROM Users WHERE name = ?""", [userName])
+        if c.fetchone[0] == password:
+            validLogin = True
+            print("Valid credentials... \nLogging in...")
+        else: 
+            print(f"Invalid credentials for user {userName}... \n")
+        
+        return validLogin
+            
 
     def createPassword(self, password="", owner="", service="", locked=0):
         print("Creating new password for user...")
