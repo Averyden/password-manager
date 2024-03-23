@@ -78,7 +78,7 @@ class PassManger(tk.Frame):
 
         else:
             print("Wow!")
-            self.lblSlct = ttk.Label(self.Frame, text="Welcome.. if you see this, the update label function failed...")
+            self.lblSlct = ttk.Label(self.Frame, text="Welcome.. \nif you see this, the update label function failed...")
             self.lblSlct.grid(column=0, row=0, columnspan=2)
 
             self.btnToggle = ttk.Button(self.Frame, text="Log out", command=self.logOut)
