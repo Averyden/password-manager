@@ -20,8 +20,6 @@ except Exception as e:
 class PassManger(tk.Frame):  
     def __init__(self):
         tk.Frame.__init__(self)
-        # self.root = root
-       # self.root.title("TestApp for passDB")
         self.buildUIStart1()
         self.updateLabels()
 
