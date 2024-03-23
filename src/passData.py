@@ -43,7 +43,7 @@ class PassData():
             
         if len(password) <= 2:
             self.loginIssue = "Please provide a valid password."
-            print("No password provided")
+            print("No password provided...\n")
             if len(password) == 0:
                 self.loginIssue = "Please provide a password."
                 print("Invalid password requested...\n")
