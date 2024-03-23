@@ -33,10 +33,14 @@ class PassData():
         self.loginIssue = "" #* String to return incase logging in fails.
         print(f"Checking credentials for username {userName}...\n")
         if len(userName) <= 2:
+            self.loginIssue = "Please provide a username."
             print("Invalid username...\n")
+            return self.loginIssue
             
         if len(password) <= 2:
+            self.loginIssue = "Please provide a password."
             print("Invalid password requested...\n")
+            return self.loginIssue
 
         c = self.db.cursor()
         try:
