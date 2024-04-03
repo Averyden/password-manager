@@ -43,9 +43,6 @@ class PassManger(tk.Frame):
             self.buildMainWindow()
         else:
             self.buildUIStart1() #! Build login window based on user login status.
-
-   
-
         
 
     def alzheimers(self):
@@ -109,12 +106,6 @@ class PassManger(tk.Frame):
 
         self.btnRegister = ttk.Button(self.Frame, text="Create account", command=None) #! Pass for now
         self.btnRegister.grid(row=6, column=1)
-
-       
-        print("Wow!")
-      
-        
-
         self.pack()
 
 
