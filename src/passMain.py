@@ -2,7 +2,10 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import json
 from passData import PassData
+from uiBuild import BuildFunctions
 
+
+builder = BuildFunctions()
 data = PassData()
 
 data.createTables()
@@ -24,7 +27,11 @@ class PassManger(tk.Frame):
         self.updateLabels()
 
     def updateLabels(self):
-        self.lblAccountIssue.configure(text=f"{data.loginIssue}")
+        try:
+            self.lblAccountIssue.configure(text=f"{data.loginIssue}")
+        except:
+            pass
+
         if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
             self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['Loggedin'])}.")
 
@@ -40,6 +47,9 @@ class PassManger(tk.Frame):
         passwordToSend = self.passwordEntry.get()
         data.loginUser(userName=usernameToSend, password=passwordToSend)
         self.updateLabels()
+
+    def callBuildRegister(self):
+        builder.buildRegisterUI()
 
 
     def buildUIStart1(self): 
