@@ -23,30 +23,34 @@ except Exception as e:
 class PassManger(tk.Frame):  
     def __init__(self):
         tk.Frame.__init__(self)
-        self.updateLabels()
-        self.currentUID = None
-
+        
         self.updateLoginWindow()
 
 
+
+    def updateLabels(self):
+            try:
+                self.lblAccountIssue.configure(text=f"{data.loginIssue}")
+            except:
+                pass
+
+            if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
+                self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['Loggedin'])}.")
+    
     def updateLoginWindow(self):
+        print(f"Update label says: {lastLoggedUser['LastLogDict']['Loggedin']}")
         if lastLoggedUser["LastLogDict"]["Loggedin"]:
             self.buildMainWindow()
         else:
             self.buildUIStart1() #! Build login window based on user login status.
 
-    def updateLabels(self):
-        try:
-            self.lblAccountIssue.configure(text=f"{data.loginIssue}")
-        except:
-            pass
+   
 
-        if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
-            self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['Loggedin'])}.")
+        
 
-    def clearWidgets(self):
+    def alzheimers(self):
         for widget in self.winfo_children():
-            widget.grid_forget() #? Should clear all widgets?
+            widget.grid_forget() #? Should clear all widgets? spoiler alert: IT DOES 🥹
 
     def logOut(self):
         lastLoggedUser["LastLogDict"]["Loggedin"] = False
@@ -61,12 +65,12 @@ class PassManger(tk.Frame):
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
         data.loginUser(userName=usernameToSend, password=passwordToSend)
-        # self.updateLabels()
-        self.updateLoginWindow()
-
-    # def callBuildRegister(self):
-    #     builder.buildRegisterUI()
-
+    
+        if data.loginIssue != None: #* Failed login, update labels to maintain user info on entries and display error msg.
+            self.updateLabels()
+        else: #* Successful login, update the entire window.
+            self.updateLoginWindow()
+        print(f"Sender says: {lastLoggedUser['LastLogDict']['Loggedin']}")
 
     #! CONTINUING FORTH IS THE BUILDING OF ALL THE UIS
     #! This code is about to get messy really quickly
@@ -74,7 +78,7 @@ class PassManger(tk.Frame):
     #! 😔
 
     def buildUIStart1(self): 
-        self.clearWidgets()
+        self.alzheimers()
         self.Frame = tk.Frame(self)
         self.Frame.grid(column=0, row=0)
 
@@ -115,10 +119,11 @@ class PassManger(tk.Frame):
 
 
     def buildMainWindow(self):
-        self.clearWidgets()
+        print("AAAAA")
+        self.alzheimers()
+        
         self.Frame = tk.Frame(self)
         self.Frame.grid(column=0, row=0)
-
 
         self.lblSlct = ttk.Label(self.Frame, text="Welcome.. \nif you see this, the update label function failed...")
         self.lblSlct.grid(column=0, row=0, columnspan=2)
@@ -127,6 +132,7 @@ class PassManger(tk.Frame):
         self.btnToggle.grid(column=0, row=1, columnspan=2)
 
         self.pack()
+        self.updateLabels()
     
 
 prg = PassManger()
