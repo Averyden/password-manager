@@ -66,7 +66,7 @@ class PassData():
                     if fetchedID is not None: #! the UID does exist, now write to JSON file.
                         validLogin = True
                         lastLoggedUser["LastLogDict"]["Loggedin"] = True
-                        lastLoggedUser["LastLogDict"]["lastLoggedUser"] = fetchedID[0]
+                        lastLoggedUser["LastLogDict"]["lastLoggedUser"] = fetchedID[0]                    
                         print("Valid credentials... \nLogging in...")
 
                     else: 
