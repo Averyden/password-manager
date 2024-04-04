@@ -29,6 +29,12 @@ class PassManger(tk.Frame):
 
 
     def updateLabels(self):
+
+        #* Reopen the file to read the updated content 
+        #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
+            
             try:
                 self.lblAccountIssue.configure(text=f"{data.loginIssue}")
             except:
@@ -38,8 +44,14 @@ class PassManger(tk.Frame):
                 self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['Loggedin'])}.")
     
     def updateLoginWindow(self):
+
+        #* Reopen the file to read the updated content 
+        #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
+
         print(f"Update label says: {lastLoggedUser['LastLogDict']['Loggedin']}")
-        if lastLoggedUser["LastLogDict"]["Loggedin"]:
+        if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
             self.buildMainWindow()
         else:
             self.buildUIStart1() #! Build login window based on user login status.
@@ -62,11 +74,17 @@ class PassManger(tk.Frame):
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
         data.loginUser(userName=usernameToSend, password=passwordToSend)
+
+        #* Reopen the file to read the updated content 
+        #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
     
-        if data.loginIssue != None: #* Failed login, update labels to maintain user info on entries and display error msg.
+        if len(data.loginIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
             self.updateLabels()
         else: #* Successful login, update the entire window.
             self.updateLoginWindow()
+
         print(f"Sender says: {lastLoggedUser['LastLogDict']['Loggedin']}")
 
     #! CONTINUING FORTH IS THE BUILDING OF ALL THE UIS
