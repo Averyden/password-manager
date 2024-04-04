@@ -10,9 +10,6 @@ data = PassData()
 
 data.createTables()
 
-#data.createUser("JEff", "jeff@island.com", "123")
-
-data.getUserFromID(1) #* should fetch jeff
 
 try:
     with open("assets/lastLogin.json") as lastLogin:
@@ -37,12 +34,12 @@ class PassManger(tk.Frame):
             lastLoggedUser = json.load(lastLogin)
             
             try:
-                self.lblAccountIssue.configure(text=f"{data.loginIssue}")
+                self.lblAccountIssue.configure(text=f"{data.accountIssue}")
             except:
                 pass
 
             if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
-                self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['Loggedin'])}.")
+                self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}.")
     
     def updateLoginWindow(self):
 
@@ -81,7 +78,7 @@ class PassManger(tk.Frame):
         with open("assets/lastLogin.json") as lastLogin:
             lastLoggedUser = json.load(lastLogin)
     
-        if len(data.loginIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
+        if len(data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
             self.updateLabels()
         else: #* Successful login, update the entire window.
             self.updateLoginWindow()
@@ -92,14 +89,16 @@ class PassManger(tk.Frame):
     def sendCreationDetails(self):
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
-        data.loginUser(userName=usernameToSend, password=passwordToSend)
+        confirmationToSend = self.rptPassEntry.get()
+        emailToSend = self.emailEntry.get()
+        data.createUser(name=usernameToSend, email=emailToSend, password=passwordToSend, confirmation=confirmationToSend)
 
         #* Reopen the file to read the updated content 
         #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
         with open("assets/lastLogin.json") as lastLogin:
             lastLoggedUser = json.load(lastLogin)
     
-        if len(data.loginIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
+        if len(data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
             self.updateLabels()
         else: #* Successful login, update the entire window.
             self.updateLoginWindow()
@@ -160,29 +159,36 @@ class PassManger(tk.Frame):
         self.userNameEntry = ttk.Entry(self.Frame, text="Username")
         self.userNameEntry.grid(row=2, column=0, columnspan=2)
 
+
+        self.lblEM = ttk.Label(self.Frame, text="Email")
+        self.lblEM.grid(row=3, column=0, columnspan=2)
+
+        self.emailEntry = ttk.Entry(self.Frame)
+        self.emailEntry.grid(row=4, column=0, columnspan=2)
+
         self.lblPass = ttk.Label(self.Frame, text="Password")
-        self.lblPass.grid(row=3, column=0, columnspan=2)
+        self.lblPass.grid(row=5, column=0, columnspan=2)
 
         self.passwordEntry = ttk.Entry(self.Frame, text="Password", show="\u2022") #! u2022 is for the bullet symbol to hide the user's password.and
         #? Maybe incorporate a "show" button?
         #? Depends on if TKinter allows that.
-        self.passwordEntry.grid(row=4, column=0, columnspan=2)
+        self.passwordEntry.grid(row=6, column=0, columnspan=2)
 
         self.lblRptPass = ttk.Label(self.Frame, text="Confirm password")
-        self.lblRptPass.grid(row=5, column=0, columnspan=2)
+        self.lblRptPass.grid(row=7, column=0, columnspan=2)
 
         self.rptPassEntry = ttk.Entry(self.Frame, text="Confirm Password", show="\u2022")
-        self.rptPassEntry.grid(row=6, column=0, columnspan=2)
+        self.rptPassEntry.grid(row=8, column=0, columnspan=2)
 
 
         self.lblAccountIssue = ttk.Label(self.Frame, text="")
-        self.lblAccountIssue.grid(row=7, column=0, columnspan=2)
+        self.lblAccountIssue.grid(row=9, column=0, columnspan=2)
 
         self.btnLogin = ttk.Button(self.Frame, text="Create account", command=self.sendCreationDetails) 
-        self.btnLogin.grid(row=8, column=0)
+        self.btnLogin.grid(row=10, column=0)
 
         self.btnRegister = ttk.Button(self.Frame, text="Log in to existing account", command=self.buildUIStart1) #! Pass for now
-        self.btnRegister.grid(row=8, column=1)
+        self.btnRegister.grid(row=10, column=1)
 
         self.pack()
 
