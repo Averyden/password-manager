@@ -85,6 +85,11 @@ class PassManger(tk.Frame):
 
         print(f"Sender says: {lastLoggedUser['LastLogDict']['Loggedin']}")
 
+    def sendVaultUnlockRequest(self):
+        passwordToTry = self.entryMPass.get()
+        data.checkMasterPassword(UID=lastLoggedUser['LastLogDict']['lastLoggedUser'], enteredPassword=passwordToTry)
+        print(data.validMasterPass)
+         #* Parse user ID and entered master password to send to the database.
 
     def sendCreationDetails(self):
         usernameToSend = self.userNameEntry.get()
@@ -202,11 +207,20 @@ class PassManger(tk.Frame):
         self.lblSlct = ttk.Label(self.Frame, text="Welcome.. \nif you see this, the update label function failed...")
         self.lblSlct.grid(column=0, row=0, columnspan=2)
 
-        self.btnToggle = ttk.Button(self.Frame, text="Log out", command=self.logOut)
-        self.btnToggle.grid(column=0, row=1, columnspan=2)
+        self.lblPlease = ttk.Label(self.Frame, text="Verify your master password to continue.")
+        self.lblPlease.grid(column=0, row=1, columnspan=2)
+
+        self.entryMPass = ttk.Entry(self.Frame, show="\u2022")
+        self.entryMPass.grid(column=0, row=2, columnspan=2)
+
+        self.btnUnlock = ttk.Button(self.Frame, text="Unlock vault", command=self.sendVaultUnlockRequest)
+        self.btnUnlock.grid(column=0, row=3)
+
+        self.btnLogOut = ttk.Button(self.Frame, text="Log out", command=self.logOut)
+        self.btnLogOut.grid(column=1, row=3)
 
         self.pack()
-        self.updateLabels()
+        self.updateLabels()        
     
 
 prg = PassManger()
