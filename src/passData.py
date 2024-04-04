@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import re
 
 try:
     with open("assets/lastLogin.json") as lastLogin:
@@ -11,7 +12,7 @@ class PassData():
     def __init__(self):
         self.db = sqlite3.connect("assets/passData.db")
 
-        self.loginIssue = "" #* Set to a global var so it can be called from the main code.
+        self.accountIssue = "" #* Set to a global var so it can be called from the main code.
 
         
     def getUserFromID(self, id):
@@ -22,33 +23,97 @@ class PassData():
         print(fetchedUser[0])
         return fetchedUser[0]
 
-    def createUser(self, name="", email="", password=""): #? Maybe encrypt passwords, so they arent in plain text?
+    def createUser(self, name="", email="", password="", confirmation=""): #? Maybe encrypt passwords, so they arent in plain text?
         print("Registering new user...")
+        validCreation = False #* False by default
+        self.accountIssue = "" #* String to return to main program.
+        if len(name) <= 2:
+            self.accountIssue = "Username must be longer than two characters."
+            print("Invalid username provided for registration... \n")
+            if len(name) == 0:
+                self.accountIssue = "Please provide a username."
+                print("No username provided for registration...\n")
+                return self.accountIssue
+            return self.accountIssue
+        
+        if len(password) <= 2:
+            self.accountIssue = "Password must be longer than two characters."
+            print("Invalid password provided...\n")
+            if len(password) == 0:
+                self.accountIssue = "Please provide a password."
+                print("No password provided...\n")
+                return self.accountIssue
+            return self.accountIssue
+
+        #* Make a check to see if the confirmed password is the same as the password
+        if confirmation != password:
+            self.accountIssue = "Confirm password does not match password."
+            print("Invalid confirmation...\n")
+            return self.accountIssue
+
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            self.accountIssue = "Please provide a valid email address."
+            print("Invalid email address provided...\n")
+            return self.accountIssue
+
+        if len(email) == 0:
+            self.accountIssue = "Please provide an email address."
+            print("No email address provided...\n")
+            return self.accountIssue
+
         c = self.db.cursor()
-        c.execute('''INSERT INTO Users (name, email, password) VALUES (?,?,?)''', [name,email,password]) 
-        self.db.commit()
+        #* check username occupancy
+        try:
+            c.execute('''SELECT name FROM Users WHERE name = ?''', [name])
+            fetchedName = c.fetchone()
+
+            if fetchedName is not None:
+                self.accountIssue = "Username is already in use."
+                print(f"Username '{name}' is already occupied...\n")
+
+                c.execute('''SELECT email FROM Users WHERE email = ?''', [email])
+                fetchedMail = c.fetchone()
+                if fetchedMail is not None:
+                    self.accountIssue = "Email is already in use."
+                    print(f"Email '{email}' is already occupied...\n")
+                    return self.accountIssue
+                return self.accountIssue
+            else:
+                validCreation = True
+        
+        except Exception as e:
+            print("Error during registration:", e)
+        
+        if validCreation == True:
+            c.execute('''INSERT INTO Users (name, email, password) VALUES (?,?,?)''', [name,email,password]) 
+            self.db.commit()
+            print("created user")
+
+            self.loginUser(userName=str(name), password=str(password))
+
+            
 
     def loginUser(self, userName="", password=""):
         validLogin = False #* Bool to check at the end of function
-        self.loginIssue = "" #* String to return incase logging in fails.
+        self.accountIssue = "" #* String to return incase logging in fails.
         print(f"Checking credentials for username {userName}...\n")
         if len(userName) <= 2:
-            self.loginIssue = "Please provide a valid username."
+            self.accountIssue = "Please provide a valid username."
             print("Invalid username...\n")
             if len(userName) == 0:
-                self.loginIssue = "Please provide a username."
+                self.accountIssue = "Please provide a username."
                 print("No username submitted...\n")
-                return self.loginIssue
-            return self.loginIssue
+                return self.accountIssue
+            return self.accountIssue
             
         if len(password) <= 2:
-            self.loginIssue = "Please provide a valid password."
+            self.accountIssue = "Please provide a valid password."
             print("No password provided...\n")
             if len(password) == 0:
-                self.loginIssue = "Please provide a password."
+                self.accountIssue = "Please provide a password."
                 print("Invalid password requested...\n")
-                return self.loginIssue
-            return self.loginIssue
+                return self.accountIssue
+            return self.accountIssue
 
         c = self.db.cursor()
         try:
@@ -71,13 +136,13 @@ class PassData():
 
                     else: 
                         print(f"Failed to retrieve user ID for {userName}...")
-                        self.loginIssue = "Error while logging in."
+                        self.accountIssue = "Error while logging in."
                 else:
                     print(f"Invalid credentials for user {userName}... \n")
-                    self.loginIssue = "Invalid username or password."
+                    self.accountIssue = "Invalid username or password."
             else:
                 print("User does not exist.")
-                self.loginIssue = "Invalid username or password."
+                self.accountIssue = "Invalid username or password."
 
         except Exception as e:
             print("Error during login:", e)
@@ -85,7 +150,7 @@ class PassData():
         with open("assets/lastLogin.json", "w") as lastLogin:
             json.dump(lastLoggedUser, lastLogin, indent=4)
         
-        return validLogin, self.loginIssue
+        return validLogin, self.accountIssue
             
 
     def createPassword(self, password="", owner="", service="", locked=0):
