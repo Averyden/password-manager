@@ -13,6 +13,7 @@ class PassData():
         self.db = sqlite3.connect("assets/passData.db")
 
         self.accountIssue = "" #* Set to a global var so it can be called from the main code.
+        self.validMasterPass = False #* No need to let someone in despite program just being launched.
 
         
     def getUserFromID(self, id):
@@ -22,6 +23,20 @@ class PassData():
         fetchedUser = c.fetchone()
         print(fetchedUser[0])
         return fetchedUser[0]
+
+    def checkMasterPassword(self, UID="", enteredPassword=""):
+        self.validMasterPass = False #* Reset it just in case.
+
+        c = self.db.cursor()
+        try:
+            c.execute('''SELECT password FROM Users WHERE id = ?''', [UID])
+            fetchedPassword = c.fetchone()
+            if fetchedPassword != None:
+                if fetchedPassword[0] == enteredPassword:
+                    self.validMasterPass = True
+                    print("Thingy worky")
+        except Exception as e:
+            print("Error while trying master password: \n", e)
 
     def createUser(self, name="", email="", password="", confirmation=""): #? Maybe encrypt passwords, so they arent in plain text?
         print("Registering new user...")
@@ -70,16 +85,17 @@ class PassData():
             if fetchedName is not None:
                 self.accountIssue = "Username is already in use."
                 print(f"Username '{name}' is already occupied...\n")
-
-                c.execute('''SELECT email FROM Users WHERE email = ?''', [email])
-                fetchedMail = c.fetchone()
-                if fetchedMail is not None:
-                    self.accountIssue = "Email is already in use."
-                    print(f"Email '{email}' is already occupied...\n")
-                    return self.accountIssue
                 return self.accountIssue
             else:
                 validCreation = True
+
+            c2 = self.db.cursor()
+            c2.execute('''SELECT email FROM Users WHERE email = ?''', [email])
+            fetchedMail = c2.fetchone()
+            if fetchedMail is not None:
+                self.accountIssue = "Email is already in use."
+                print(f"Email '{email}' is already occupied...\n")
+                return self.accountIssue
         
         except Exception as e:
             print("Error during registration:", e)
