@@ -22,6 +22,7 @@ class PassManger(tk.Frame):
         tk.Frame.__init__(self)
         
         self.updateLoginWindow()
+        
     def updateLabels(self):
 
         #* Reopen the file to read the updated content 
