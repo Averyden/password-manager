@@ -40,6 +40,7 @@ class PassManger(tk.Frame):
 
             if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
                 self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}.")
+                self.lblAccount.configure(text=f"{data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}'s password vault.")
     
     def updateLoginWindow(self):
 
@@ -50,7 +51,7 @@ class PassManger(tk.Frame):
 
         print(f"Update label says: {lastLoggedUser['LastLogDict']['Loggedin']}")
         if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
-            self.buildMainWindow()
+            self.loggedInNoVaultWindow()
         else:
             self.buildUIStart1() #! Build login window based on user login status.
         
@@ -89,6 +90,14 @@ class PassManger(tk.Frame):
         passwordToTry = self.entryMPass.get()
         data.checkMasterPassword(UID=lastLoggedUser['LastLogDict']['lastLoggedUser'], enteredPassword=passwordToTry)
         print(data.validMasterPass)
+        
+        #* Check whether or not the master password was a success utilizing the variabel in the data code.
+        if data.validMasterPass == True:
+            self.buildMainWindow()
+            data.accountIssue = "" #* Reset accountIssue var incase user got the password wrong first try.
+        else:
+            data.accountIssue = "Invalid master password."
+            self.updateLabels()
          #* Parse user ID and entered master password to send to the database.
 
     def sendCreationDetails(self):
@@ -197,7 +206,7 @@ class PassManger(tk.Frame):
 
         self.pack()
 
-    def buildMainWindow(self):
+    def loggedInNoVaultWindow(self):
         print("AAAAA")
         self.alzheimers()
         
@@ -214,14 +223,30 @@ class PassManger(tk.Frame):
         self.entryMPass.grid(column=0, row=2, columnspan=2)
 
         self.btnUnlock = ttk.Button(self.Frame, text="Unlock vault", command=self.sendVaultUnlockRequest)
-        self.btnUnlock.grid(column=0, row=3)
+        self.btnUnlock.grid(column=0, row=4)
 
         self.btnLogOut = ttk.Button(self.Frame, text="Log out", command=self.logOut)
-        self.btnLogOut.grid(column=1, row=3)
+        self.btnLogOut.grid(column=1, row=4)
+
+        self.lblAccountIssue = ttk.Label(self.Frame, text="")
+        self.lblAccountIssue.grid(row=3, column=0, columnspan=2)
 
         self.pack()
         self.updateLabels()        
     
+
+    def buildMainWindow(self):
+        self.alzheimers()
+
+        self.Frame = tk.Frame()
+        self.Frame.grid(column=0, row=0)
+
+        self.lblAccount = ttk.Label(self.Frame, text="woops, something went wrong")
+        self.lblAccount.grid(column=0, row=0, columnspan=2)
+
+        self.webCanvas = tk.Canvas(self.Frame)
+        self.webCanvas.grid(row=2, column=0, sticky="nsew")
+
 
 prg = PassManger()
 prg.master.title('PasManJSONTest')
