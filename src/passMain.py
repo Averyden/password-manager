@@ -79,6 +79,14 @@ class PassManger(tk.Frame):
         
         self.updateLoginWindow()
 
+    def onPasswordSelect(self):
+        curItem = self.serviceView.item(self.serviceView.focus())['values']
+        if len(curItem) > 0:
+            try: 
+                self.lblCurrentSelectC.config(text = 'Currently selected action: {}'.format(curItem[0]))
+            except:
+                print("For some reason it failed.. dunno why")
+
     def sendLoginDetails(self):
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
@@ -98,7 +106,7 @@ class PassManger(tk.Frame):
 
     def sendVaultUnlockRequest(self):
         passwordToTry = self.entryMPass.get()
-        
+
         #* Reopen the file to read the updated content 
         #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
         with open("assets/lastLogin.json") as lastLogin:
@@ -264,17 +272,27 @@ class PassManger(tk.Frame):
         self.lblMainAccount.grid(column=0, row=0, columnspan=2)
         
         self.serviceView = ttk.Treeview(self.Frame, column=("Service"), show='headings')
+        self.serviceView.bind("<ButtonRelease-1>", self.onPasswordSelect)
         self.serviceView.heading("#1", text="Service")
         self.serviceView["displaycolumns"]=("Service")
         ysb = ttk.Scrollbar(self, command=self.serviceView.yview, orient=tk.VERTICAL)
         self.serviceView.configure(yscrollcommand=ysb.set)
         self.serviceView.grid(column=0, row=1, rowspan=5, padx=25, pady=5)
 
+        self.lblSlctService = ttk.Label(self.Frame, text="No selected password.")
+        self.lblSlctService.grid(column=1, row=1, padx=25)
+
+        self.lblSlctUN = ttk.Label(self.Frame, text="")
+        self.lblSlctUN.grid(column=1, row=3)
+
+        self.lblSlctPass = ttk.Label(self.Frame, text="")
+        self.lblSlctPass.grid(column=1, row=5)
+
         self.btnAddPassword = ttk.Button(self.Frame, text="+", command=self.buildServiceAddition)
-        self.btnAddPassword.grid(column=0, row=6, pady=3, columnspan=2)
+        self.btnAddPassword.grid(column=0, row=7, pady=3)
 
         self.btnLockVault = ttk.Button(self.Frame, text="Lock vault", command=self.loggedInNoVaultWindow)
-        self.btnLockVault.grid(column=1, row=6, columnspan=2)
+        self.btnLockVault.grid(column=1, row=7)
 
         self.pack()
         self.updateLabels()
@@ -319,5 +337,5 @@ class PassManger(tk.Frame):
 
 
 prg = PassManger()
-prg.master.title('PasManJSONTest')
+prg.master.title('Password Manager')
 prg.mainloop()
