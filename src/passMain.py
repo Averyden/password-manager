@@ -22,7 +22,7 @@ class PassManger(tk.Frame):
         tk.Frame.__init__(self)
         
         self.updateLoginWindow()
-        
+
     def updateLabels(self):
 
         #* Reopen the file to read the updated content 
@@ -45,8 +45,8 @@ class PassManger(tk.Frame):
                     self.serviceView.delete(*self.serviceView.get_children())
                     for service in services:
                         self.serviceView.insert("", tk.END, values=service)
-                except:
-                    print("User is not on their vault...\n \nDon't do anything...")
+                except Exception as e:
+                    print("Exception occurred:", e)
 
 
     
@@ -77,7 +77,7 @@ class PassManger(tk.Frame):
         
         self.updateLoginWindow()
 
-    def onPasswordSelect(self):
+    def onPasswordSelect(self, event):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if len(curItem) > 0:
             try: 
@@ -123,7 +123,15 @@ class PassManger(tk.Frame):
          #* Parse user ID and entered master password to send to the database.
 
     def sendPassCreationDetails(self):
-        pass
+        #* Reopen the file to read the updated content 
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
+        userID = lastLoggedUser['LastLogDict']['lastLoggedUser']
+        usernameToSend = self.userNameEntry.get()
+        passwordToSend = self.passwordEntry.get()
+        serviceToSend = self.serviceEntry.get()
+
+        data.createPassword(password=passwordToSend, owner=userID, service=serviceToSend, username=usernameToSend)
 
     def sendCreationDetails(self):
         usernameToSend = self.userNameEntry.get()
