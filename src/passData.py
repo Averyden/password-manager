@@ -30,6 +30,7 @@ class PassData():
 
         services = []
         for service in c:
+            print(c.fetchone[0])
             services.append((c.fetchone[0]))
 
         return services
@@ -179,13 +180,13 @@ class PassData():
         return validLogin, self.accountIssue
             
 
-    def createPassword(self, password="", owner="", service="", locked=0):
+    def createPassword(self, password="", owner="", service="", username=""):
         print("Creating new password for user...")
-        if len(owner) == 0:
+        if owner == 0:
             print("Can't create new password. \n \nOwner value can't be of null.")
         else:
             c = self.db.cursor()
-            c.execute('''INSERT INTO Passwords (owner, service, password, locked) VALUES (?,?,?,?)''', [owner, service, password, locked])
+            c.execute('''INSERT INTO Passwords (owner, service, password, username) VALUES (?,?,?,?)''', [owner, service, password, username])
             self.db.commit()
 
     def deleteUser(self):
@@ -221,7 +222,7 @@ class PassData():
                 owner INTEGER, 
                 service TEXT,
                 password TEXT,
-                locked INTEGER);''')
+                username TEXT);''')
                 #* Supposed to be a boolean value, but SQLite doesn't support bools natively.
                 #* So good ol' INT coming to save the day here.
                 #* 0 for false, 1 for true.   
