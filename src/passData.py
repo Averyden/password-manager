@@ -24,6 +24,16 @@ class PassData():
         print(fetchedUser[0])
         return fetchedUser[0]
 
+    def getSavedPasswordWebsites(self, id): #* function to return the websites that the user has saved their passwords for.
+        c = self.db.cursor()
+        c.execute("""SELECT service FROM Passwords WHERE owner = ?""", [id])
+
+        services = []
+        for service in c:
+            services.append((c.fetchone[0]))
+
+        return services
+
     def checkMasterPassword(self, UID="", enteredPassword=""):
         self.validMasterPass = False #* Reset it just in case.
 
