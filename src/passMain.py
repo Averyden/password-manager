@@ -98,6 +98,12 @@ class PassManger(tk.Frame):
 
     def sendVaultUnlockRequest(self):
         passwordToTry = self.entryMPass.get()
+        
+        #* Reopen the file to read the updated content 
+        #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
+
         data.checkMasterPassword(UID=lastLoggedUser['LastLogDict']['lastLoggedUser'], enteredPassword=passwordToTry)
         print(data.validMasterPass)
         
@@ -109,6 +115,9 @@ class PassManger(tk.Frame):
             data.accountIssue = "Invalid master password."
             self.updateLabels()
          #* Parse user ID and entered master password to send to the database.
+
+    def sendPassCreationDetails(self):
+        pass
 
     def sendCreationDetails(self):
         usernameToSend = self.userNameEntry.get()
@@ -254,12 +263,18 @@ class PassManger(tk.Frame):
         self.lblMainAccount = ttk.Label(self.Frame, text="woops, something went wrong")
         self.lblMainAccount.grid(column=0, row=0, columnspan=2)
         
-        self.serviceView = ttk.Treeview(self, column=("Service"), show='headings')
+        self.serviceView = ttk.Treeview(self.Frame, column=("Service"), show='headings')
         self.serviceView.heading("#1", text="Service")
         self.serviceView["displaycolumns"]=("Service")
         ysb = ttk.Scrollbar(self, command=self.serviceView.yview, orient=tk.VERTICAL)
         self.serviceView.configure(yscrollcommand=ysb.set)
         self.serviceView.grid(column=0, row=1, rowspan=5, padx=25, pady=5)
+
+        self.btnAddPassword = ttk.Button(self.Frame, text="+", command=self.buildServiceAddition)
+        self.btnAddPassword.grid(column=0, row=6, pady=3, columnspan=2)
+
+        self.btnLockVault = ttk.Button(self.Frame, text="Lock vault", command=self.loggedInNoVaultWindow)
+        self.btnLockVault.grid(column=1, row=6, columnspan=2)
 
         self.pack()
         self.updateLabels()
@@ -295,10 +310,10 @@ class PassManger(tk.Frame):
         self.passwordEntry.grid(row=6, column=0, columnspan=2)
 
         self.btnLogin = ttk.Button(self.Frame, text="Add to vault", command=self.sendPassCreationDetails) 
-        self.btnLogin.grid(row=10, column=0)
+        self.btnLogin.grid(row=7, column=0)
 
         self.btnRegister = ttk.Button(self.Frame, text="Cancel", command=self.buildMainWindow) #! Pass for now
-        self.btnRegister.grid(row=10, column=1)
+        self.btnRegister.grid(row=7, column=1)
 
         self.pack()
 
