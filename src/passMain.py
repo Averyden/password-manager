@@ -2,10 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import json
 from passData import PassData
-# from uiBuild import BuildFunctions
 
-
-# builder = BuildFunctions()
 data = PassData()
 
 data.createTables()
