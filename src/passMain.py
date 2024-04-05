@@ -38,9 +38,19 @@ class PassManger(tk.Frame):
             except:
                 pass
 
-            if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
+            if lastLoggedUser["LastLogDict"]["Loggedin"] == True: #* If user is logged in
                 self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}.")
-                self.lblAccount.configure(text=f"{data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}'s password vault.")
+                try:
+                    self.lblMainAccount.configure(text=f"{data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}'s password vault.")
+
+                    services = data.getSavedPasswordWebsites(lastLoggedUser['LastLogDict']['lastLoggedUser'])
+                    self.serviceView.delete(*self.serviceView.get_children())
+                    for service in services:
+                        self.serviceView.insert("", tk.END, values=service)
+                except:
+                    print("User is not on their vault...\n \nDon't do anything...")
+
+
     
     def updateLoginWindow(self):
 
@@ -238,14 +248,59 @@ class PassManger(tk.Frame):
     def buildMainWindow(self):
         self.alzheimers()
 
-        self.Frame = tk.Frame()
+        self.Frame = tk.Frame(self)
         self.Frame.grid(column=0, row=0)
 
-        self.lblAccount = ttk.Label(self.Frame, text="woops, something went wrong")
-        self.lblAccount.grid(column=0, row=0, columnspan=2)
+        self.lblMainAccount = ttk.Label(self.Frame, text="woops, something went wrong")
+        self.lblMainAccount.grid(column=0, row=0, columnspan=2)
+        
+        self.serviceView = ttk.Treeview(self, column=("Service"), show='headings')
+        self.serviceView.heading("#1", text="Service")
+        self.serviceView["displaycolumns"]=("Service")
+        ysb = ttk.Scrollbar(self, command=self.serviceView.yview, orient=tk.VERTICAL)
+        self.serviceView.configure(yscrollcommand=ysb.set)
+        self.serviceView.grid(column=0, row=1, rowspan=5, padx=25, pady=5)
 
-        self.webCanvas = tk.Canvas(self.Frame)
-        self.webCanvas.grid(row=2, column=0, sticky="nsew")
+        self.pack()
+        self.updateLabels()
+
+
+    def buildServiceAddition(self):
+        self.alzheimers()
+        self.Frame = tk.Frame(self)
+        self.Frame.grid(column=0, row=0)
+
+        self.lblSlct = ttk.Label(self.Frame, text="Add password to vault")
+        self.lblSlct.grid(column=0, row=0, columnspan=2)
+
+        self.lblSrvice = ttk.Label(self.Frame, text="Service")
+        self.lblSrvice.grid(row=1, column=0, columnspan=2)
+
+        self.serviceEntry = ttk.Entry(self.Frame, text="Service")
+        self.serviceEntry.grid(row=2, column=0, columnspan=2)
+
+
+        self.lblUN = ttk.Label(self.Frame, text="Username")
+        self.lblUN.grid(row=3, column=0, columnspan=2)
+
+        self.userNameEntry = ttk.Entry(self.Frame)
+        self.userNameEntry.grid(row=4, column=0, columnspan=2)
+
+        self.lblPass = ttk.Label(self.Frame, text="Password")
+        self.lblPass.grid(row=5, column=0, columnspan=2)
+
+        self.passwordEntry = ttk.Entry(self.Frame, text="Password", show="\u2022") #! u2022 is for the bullet symbol to hide the user's password.and
+        #? Maybe incorporate a "show" button?
+        #? Depends on if TKinter allows that.
+        self.passwordEntry.grid(row=6, column=0, columnspan=2)
+
+        self.btnLogin = ttk.Button(self.Frame, text="Add to vault", command=self.sendPassCreationDetails) 
+        self.btnLogin.grid(row=10, column=0)
+
+        self.btnRegister = ttk.Button(self.Frame, text="Cancel", command=self.buildMainWindow) #! Pass for now
+        self.btnRegister.grid(row=10, column=1)
+
+        self.pack()
 
 
 prg = PassManger()
