@@ -240,10 +240,7 @@ class PassData():
                 owner INTEGER, 
                 service TEXT,
                 password TEXT,
-                username TEXT);''')
-                #* Supposed to be a boolean value, but SQLite doesn't support bools natively.
-                #* So good ol' INT coming to save the day here.
-                #* 0 for false, 1 for true.   
+                username TEXT);''')  
         except:
             print("Table 'Passwords' already exists... \nPassing...")
             
