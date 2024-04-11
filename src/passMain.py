@@ -1,6 +1,8 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import json
+import requests
+import hashlib
 from passData import PassData
 # from uiBuild import BuildFunctions
 
@@ -161,6 +163,22 @@ class PassManger(tk.Frame):
         else: 
             print("What the fuck are you doing buddy.")
 
+
+    def checkPasswordForBreaches(self, password):
+        sha1password = hashlib.sha1(password.encode()).hexdigest().upper()
+        prefix, sufffix = sha1password[:5], sha1password[5:]
+
+        #* Send request to API
+        response = requests.get(f"https://api.pwnedpasswords.com/range/{prefix}")
+
+        #* Check whether or not the response was a success.
+        if response.status_code == 200:
+            for line in response.text.splitlines():
+                if line.startswith(suffix):
+                    return int(line.split(":")[1])
+            return 0
+        else:
+            print(f"Error: {response.status_code}")
 
     #! other functions continue here.
 
