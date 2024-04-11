@@ -43,6 +43,10 @@ class PassManger(tk.Frame):
 
                     services = data.getSavedPasswordWebsites(lastLoggedUser['LastLogDict']['lastLoggedUser'])
                     self.serviceView.delete(*self.serviceView.get_children())
+                    self.clearPasswordButtons()
+                    self.lblSlctService.config(text = "No selected password.")
+                    self.lblSlctUN.config(text="")
+                    self.lblSlctPass.config(text="")
                     for service in services:
                         self.serviceView.insert("", tk.END, values=service)
                 except Exception as e:
