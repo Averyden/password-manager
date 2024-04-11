@@ -346,7 +346,6 @@ class PassManger(tk.Frame):
         self.pack()
 
     def loggedInNoVaultWindow(self):
-        print("AAAAA")
         self.alzheimers()
         
         self.Frame = tk.Frame(self)
