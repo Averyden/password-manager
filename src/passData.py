@@ -24,16 +24,28 @@ class PassData():
         print(fetchedUser[0])
         return fetchedUser[0]
 
+    def getCredentialsForService(self, service, uID):
+        c = self.db.cursor()
+        c.execute("""SELECT username, password FROM Passwords WHERE service = ? AND owner = ?""", (service, uID))
+        credentials = c.fetchone()
+        if credentials:
+            return credentials
+        else:
+            print(f"No credentials found for service: {service}")
+            return None
+
+
     def getSavedPasswordWebsites(self, id): #* function to return the websites that the user has saved their passwords for.
         c = self.db.cursor()
         c.execute("""SELECT service FROM Passwords WHERE owner = ?""", [id])
 
         services = []
-        for service in c:
-            print(c.fetchone[0])
-            services.append((c.fetchone[0]))
+        for service in c.fetchall():
+            print(service[0])
+            services.append((service[0]))
 
         return services
+
 
     def checkMasterPassword(self, UID="", enteredPassword=""):
         self.validMasterPass = False #* Reset it just in case.

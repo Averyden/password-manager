@@ -46,7 +46,7 @@ class PassManger(tk.Frame):
                     for service in services:
                         self.serviceView.insert("", tk.END, values=service)
                 except Exception as e:
-                    print("Exception occurred:", e)
+                    print("Exception occurred under label updating:", e)
 
 
     
@@ -80,10 +80,16 @@ class PassManger(tk.Frame):
     def onPasswordSelect(self, event):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if len(curItem) > 0:
-            try: 
-                self.lblCurrentSelectC.config(text = 'Currently selected action: {}'.format(curItem[0]))
-            except:
-                print("For some reason it failed.. dunno why")
+            service = curItem[0]
+            uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
+            credentials = data.getCredentialsForService(service, uID)
+            if credentials:
+                username, password = credentials
+                self.lblSlctService.config(text = 'Currently selected service: {}'.format(curItem[0]))
+                self.lblSlctUN.config(text=f"Username: {username}")
+                self.lblSlctPass.config(text="Password:" + "\u2022" * len(password))
+            else:
+               print("No credentials found for selected thingy.")
 
     def sendLoginDetails(self):
         usernameToSend = self.userNameEntry.get()
@@ -132,6 +138,8 @@ class PassManger(tk.Frame):
         serviceToSend = self.serviceEntry.get()
 
         data.createPassword(password=passwordToSend, owner=userID, service=serviceToSend, username=usernameToSend)
+
+        self.buildMainWindow() #* Send user back, so there is an indication they created their password.
 
     def sendCreationDetails(self):
         usernameToSend = self.userNameEntry.get()
@@ -289,10 +297,10 @@ class PassManger(tk.Frame):
         self.lblSlctService.grid(column=1, row=1, padx=25)
 
         self.lblSlctUN = ttk.Label(self.Frame, text="")
-        self.lblSlctUN.grid(column=1, row=3)
+        self.lblSlctUN.grid(column=1, row=2)
 
         self.lblSlctPass = ttk.Label(self.Frame, text="")
-        self.lblSlctPass.grid(column=1, row=5)
+        self.lblSlctPass.grid(column=1, row=3)
 
         self.btnAddPassword = ttk.Button(self.Frame, text="+", command=self.buildServiceAddition)
         self.btnAddPassword.grid(column=0, row=7, pady=3)
@@ -336,7 +344,7 @@ class PassManger(tk.Frame):
         self.btnLogin = ttk.Button(self.Frame, text="Add to vault", command=self.sendPassCreationDetails) 
         self.btnLogin.grid(row=7, column=0)
 
-        self.btnRegister = ttk.Button(self.Frame, text="Cancel", command=self.buildMainWindow) #! Pass for now
+        self.btnRegister = ttk.Button(self.Frame, text="Cancel", command=self.buildMainWindow) #! Pass for now, cause that makes sense
         self.btnRegister.grid(row=7, column=1)
 
         self.pack()
