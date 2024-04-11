@@ -20,6 +20,7 @@ except Exception as e:
 class PassManger(tk.Frame):  
     def __init__(self):
         tk.Frame.__init__(self)
+        self.showingPassword = False
         
         self.updateLoginWindow()
 
@@ -92,12 +93,12 @@ class PassManger(tk.Frame):
                 username, password = credentials
                 self.lblSlctService.config(text = 'Currently selected service: {}'.format(curItem[0]))
                 self.lblSlctUN.config(text=f"Username: {username}")
-                self.lblSlctPass.config(text="Password:" + "\u2022" * len(password))
+                self.lblSlctPass.config(text="Password: " + "\u2022" * len(password))
 
                 self.btnCheck = ttk.Button(self.Frame, text="Check", command=None)
                 self.btnCheck.grid(row=4, column=1, padx=(0,250))
 
-                self.btnShow = ttk.Button(self.Frame, text="Show", command=None)
+                self.btnShow = ttk.Button(self.Frame, text="Show", command=self.togglePasswordVisibility)
                 self.btnShow.grid(row=4, column=1, padx=(250,250))
 
                 self.btnCopy = ttk.Button(self.Frame, text="Copy", command=self.copyPasswordToClip)
@@ -113,6 +114,29 @@ class PassManger(tk.Frame):
             self.btnShow.destroy()
         if hasattr(self, 'btnCopy'):
             self.btnCopy.destroy()
+
+    #! Functions for the password buttons go here:
+
+    def togglePasswordVisibility(self):
+        curItem = self.serviceView.item(self.serviceView.focus())['values']
+        if curItem:
+            service = curItem[0]
+            uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
+            credentials = data.getCredentialsForService(service, uID)
+            if credentials:
+                if self.showingPassword == False:
+                    self.showingPassword = True
+                    username, password = credentials
+                    self.lblSlctPass.config(text=f"Password: {password}")
+                    self.btnShow.config(text="Hide", command=self.togglePasswordVisibility)
+                elif self.showingPassword == True:
+                    self.showingPassword = False
+                    username, password = credentials
+                    self.lblSlctPass.config(text="Password: " + "\u2022" * len(password))
+                    self.btnShow.config(text="Show", command=self.togglePasswordVisibility)
+            else:
+                print("No credentials found for selected service.")
+
 
     def copyPasswordToClip(self): #* Function for copying the password to the user's clipboard
         curItem = self.serviceView.item(self.serviceView.focus())['values']
@@ -137,6 +161,8 @@ class PassManger(tk.Frame):
         else: 
             print("What the fuck are you doing buddy.")
 
+
+    #! other functions continue here.
 
     def sendDeletePassRequest(self): #* Fetch currently selected service, and send it to the database to get wiped.
         curItem = self.serviceView.item(self.serviceView.focus())['values']
