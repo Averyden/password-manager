@@ -205,10 +205,13 @@ class PassData():
         pass #! MAKE SURE IT ALSO DELETES ALL THE PASSWORDS ASSOCIATED TO THE SAME USER
 
     def deletePassword(self, service):
+        #? Should I really need to implement some sort of check here?
+        #! Nah fuck it, we ball.
         print("Attempting to delete selected password")
         c = self.db.cursor()
         c.execute('''DELETE FROM Passwords WHERE service = ?''', [service])
         print("Deleted it")
+        self.db.commit()
 
     def editPassword(self):
         pass
