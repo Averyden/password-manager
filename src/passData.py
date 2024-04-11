@@ -204,8 +204,11 @@ class PassData():
     def deleteUser(self):
         pass #! MAKE SURE IT ALSO DELETES ALL THE PASSWORDS ASSOCIATED TO THE SAME USER
 
-    def deletePassword(self):
-        pass
+    def deletePassword(self, service):
+        print("Attempting to delete selected password")
+        c = self.db.cursor()
+        c.execute('''DELETE FROM Passwords WHERE service = ?''', [service])
+        print("Deleted it")
 
     def editPassword(self):
         pass

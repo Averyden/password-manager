@@ -134,6 +134,13 @@ class PassManger(tk.Frame):
             print("What the fuck are you doing buddy.")
 
 
+    def sendDeletePassRequest(self): #* Fetch currently selected service, and send it to the database to get wiped.
+        curItem = self.serviceView.item(self.serviceView.focus())['values']
+        if curItem:
+            service = curItem[0]
+            data.deletePassword(service)
+            self.updateLabels()
+
     def sendLoginDetails(self):
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
@@ -346,7 +353,10 @@ class PassManger(tk.Frame):
         self.lblSlctPass.grid(column=1, row=3)
 
         self.btnAddPassword = ttk.Button(self.Frame, text="+", command=self.buildServiceAddition)
-        self.btnAddPassword.grid(column=0, row=7, pady=3)
+        self.btnAddPassword.grid(column=0, row=7, pady=3, padx=(0,100))
+
+        self.btnDelPassword = ttk.Button(self.Frame, text="-", command=self.sendDeletePassRequest)
+        self.btnDelPassword.grid(column=0, row=7, padx=(100,0))
 
         self.btnLockVault = ttk.Button(self.Frame, text="Lock vault", command=self.loggedInNoVaultWindow)
         self.btnLockVault.grid(column=1, row=7)
