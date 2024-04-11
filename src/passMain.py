@@ -80,6 +80,7 @@ class PassManger(tk.Frame):
     def onPasswordSelect(self, event):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if len(curItem) > 0:
+            self.clearPasswordButtons()
             service = curItem[0]
             uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
             credentials = data.getCredentialsForService(service, uID)
@@ -88,8 +89,50 @@ class PassManger(tk.Frame):
                 self.lblSlctService.config(text = 'Currently selected service: {}'.format(curItem[0]))
                 self.lblSlctUN.config(text=f"Username: {username}")
                 self.lblSlctPass.config(text="Password:" + "\u2022" * len(password))
+
+                self.btnCheck = ttk.Button(self.Frame, text="Check", command=None)
+                self.btnCheck.grid(row=4, column=1, padx=(0,250))
+
+                self.btnShow = ttk.Button(self.Frame, text="Show", command=None)
+                self.btnShow.grid(row=4, column=1, padx=(250,250))
+
+                self.btnCopy = ttk.Button(self.Frame, text="Copy", command=self.copyPasswordToClip)
+                self.btnCopy.grid(row=4, column=1, padx=(250,0))
             else:
                print("No credentials found for selected thingy.")
+
+    def clearPasswordButtons(self):
+        #* So that the buttons do not layer over eachother.
+        if hasattr(self, 'btnCheck'):
+            self.btnCheck.destroy()
+        if hasattr(self, 'btnShow'):
+            self.btnShow.destroy()
+        if hasattr(self, 'btnCopy'):
+            self.btnCopy.destroy()
+
+    def copyPasswordToClip(self): #* Function for copying the password to the user's clipboard
+        curItem = self.serviceView.item(self.serviceView.focus())['values']
+        if curItem:
+            service = curItem[0]
+            uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
+            credentials = data.getCredentialsForService(service, uID)
+            if credentials: #* Check if something got fetched.
+                username, password = credentials 
+                #* We wont be using the username variable, but we will but using the password.
+                #* Username is called so that we can also retrieve the password
+                #* I suck at coding KEK
+
+                #* Clear clipboard
+                self.clipboard_clear()
+                #* Insert password into clipboard
+                self.clipboard_append(password)
+                self.update() #* Apply changes
+                print(f"Put password into clipboard: {password}")
+            else:
+                print("No password was found to be able to be copied.")
+        else: 
+            print("What the fuck are you doing buddy.")
+
 
     def sendLoginDetails(self):
         usernameToSend = self.userNameEntry.get()
