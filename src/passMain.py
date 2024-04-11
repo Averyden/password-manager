@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 import json
 import requests
 import hashlib
+import time
 from passData import PassData
 # from uiBuild import BuildFunctions
 
@@ -97,7 +98,7 @@ class PassManger(tk.Frame):
                 self.lblSlctUN.config(text=f"Username: {username}")
                 self.lblSlctPass.config(text="Password: " + "\u2022" * len(password))
 
-                self.btnCheck = ttk.Button(self.Frame, text="Check", command=None)
+                self.btnCheck = ttk.Button(self.Frame, text="Check", command=self.sendPasswordCheck)
                 self.btnCheck.grid(row=4, column=1, padx=(0,250))
 
                 self.btnShow = ttk.Button(self.Frame, text="Show", command=self.togglePasswordVisibility)
@@ -163,10 +164,34 @@ class PassManger(tk.Frame):
         else: 
             print("What the fuck are you doing buddy.")
 
+    def sendPasswordCheck(self):
+        curItem = self.serviceView.item(self.serviceView.focus())['values']
+        if curItem:
+            service = curItem[0]
+            uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
+            credentials = data.getCredentialsForService(service, uID)
+            if credentials: 
+                username, password = credentials 
+
+                # Check for breaches
+                numBreaches = self.checkPasswordForBreaches(password)
+                
+                # Update label with breach information
+                if numBreaches > 0:
+                    self.lblAPIResponse.config(text=f"This password has been found in {numBreaches} breaches. \nIt is recommended you change your password now.")  
+                else:
+                    self.lblAPIResponse.config(text="This password has not been found in any breaches.")
+                self.after(5000, lambda: self.lblAPIResponse.config(text=""))
+            else: 
+                print("No password was found for the selected service.")
+        else: 
+            print("No service selected.")
+
+
 
     def checkPasswordForBreaches(self, password):
         sha1password = hashlib.sha1(password.encode()).hexdigest().upper()
-        prefix, sufffix = sha1password[:5], sha1password[5:]
+        prefix, suffix = sha1password[:5], sha1password[5:]
 
         #* Send request to API
         response = requests.get(f"https://api.pwnedpasswords.com/range/{prefix}")
@@ -398,6 +423,9 @@ class PassManger(tk.Frame):
 
         self.lblSlctPass = ttk.Label(self.Frame, text="")
         self.lblSlctPass.grid(column=1, row=3)
+
+        self.lblAPIResponse = ttk.Label(self.Frame, text="")
+        self.lblAPIResponse.grid(column=1, row=5, pady=1)
 
         self.btnAddPassword = ttk.Button(self.Frame, text="+", command=self.buildServiceAddition)
         self.btnAddPassword.grid(column=0, row=7, pady=3, padx=(0,100))
