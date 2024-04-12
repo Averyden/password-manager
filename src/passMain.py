@@ -1,6 +1,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import json
+import requests
+import hashlib
+import time
 from passData import PassData
 
 data = PassData()
@@ -17,6 +20,7 @@ except Exception as e:
 class PassManger(tk.Frame):  
     def __init__(self):
         tk.Frame.__init__(self)
+        self.showingPassword = False
         
         self.updateLoginWindow()
 
@@ -40,10 +44,14 @@ class PassManger(tk.Frame):
 
                     services = data.getSavedPasswordWebsites(lastLoggedUser['LastLogDict']['lastLoggedUser'])
                     self.serviceView.delete(*self.serviceView.get_children())
+                    self.clearPasswordButtons()
+                    self.lblSlctService.config(text = "No selected password.")
+                    self.lblSlctUN.config(text="")
+                    self.lblSlctPass.config(text="")
                     for service in services:
                         self.serviceView.insert("", tk.END, values=service)
                 except Exception as e:
-                    print("Exception occurred:", e)
+                    print("Exception occurred under label updating:", e)
 
 
     
@@ -77,10 +85,131 @@ class PassManger(tk.Frame):
     def onPasswordSelect(self, event):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if len(curItem) > 0:
-            try: 
-                self.lblCurrentSelectC.config(text = 'Currently selected action: {}'.format(curItem[0]))
-            except:
-                print("For some reason it failed.. dunno why")
+            self.clearPasswordButtons()
+            service = curItem[0]
+            uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
+            credentials = data.getCredentialsForService(service, uID)
+            if credentials:
+                username, password = credentials
+                self.lblSlctService.config(text = 'Currently selected service: {}'.format(curItem[0]))
+                self.lblSlctUN.config(text=f"Username: {username}")
+                self.lblSlctPass.config(text="Password: " + "\u2022" * len(password))
+
+                self.btnCheck = ttk.Button(self.Frame, text="Check", command=self.sendPasswordCheck)
+                self.btnCheck.grid(row=4, column=1, padx=(0,250))
+
+                self.btnShow = ttk.Button(self.Frame, text="Show", command=self.togglePasswordVisibility)
+                self.btnShow.grid(row=4, column=1, padx=(250,250))
+
+                self.btnCopy = ttk.Button(self.Frame, text="Copy", command=self.copyPasswordToClip)
+                self.btnCopy.grid(row=4, column=1, padx=(250,0))
+            else:
+               print("No credentials found for selected thingy.")
+
+    def clearPasswordButtons(self):
+        #* So that the buttons do not layer over eachother.
+        if hasattr(self, 'btnCheck'):
+            self.btnCheck.destroy()
+        if hasattr(self, 'btnShow'):
+            self.btnShow.destroy()
+        if hasattr(self, 'btnCopy'):
+            self.btnCopy.destroy()
+
+    #! Functions for the password buttons go here:
+
+    def togglePasswordVisibility(self):
+        curItem = self.serviceView.item(self.serviceView.focus())['values']
+        if curItem:
+            service = curItem[0]
+            uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
+            credentials = data.getCredentialsForService(service, uID)
+            if credentials:
+                if self.showingPassword == False:
+                    self.showingPassword = True
+                    username, password = credentials
+                    self.lblSlctPass.config(text=f"Password: {password}")
+                    self.btnShow.config(text="Hide", command=self.togglePasswordVisibility)
+                elif self.showingPassword == True:
+                    self.showingPassword = False
+                    username, password = credentials
+                    self.lblSlctPass.config(text="Password: " + "\u2022" * len(password))
+                    self.btnShow.config(text="Show", command=self.togglePasswordVisibility)
+            else:
+                print("No credentials found for selected service.")
+
+
+    def copyPasswordToClip(self): #* Function for copying the password to the user's clipboard
+        curItem = self.serviceView.item(self.serviceView.focus())['values']
+        if curItem:
+            service = curItem[0]
+            uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
+            credentials = data.getCredentialsForService(service, uID)
+            if credentials: #* Check if something got fetched.
+                username, password = credentials 
+                #* We wont be using the username variable, but we will but using the password.
+                #* Username is called so that we can also retrieve the password
+                #* I suck at coding KEK
+
+                #* Clear clipboard
+                self.clipboard_clear()
+                #* Insert password into clipboard
+                self.clipboard_append(password)
+                self.update() #* Apply changes
+                print(f"Put password into clipboard: {password}")
+            else:
+                print("No password was found to be able to be copied.")
+        else: 
+            print("What the fuck are you doing buddy.")
+
+    def sendPasswordCheck(self):
+        curItem = self.serviceView.item(self.serviceView.focus())['values']
+        if curItem:
+            service = curItem[0]
+            uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
+            credentials = data.getCredentialsForService(service, uID)
+            if credentials: 
+                username, password = credentials 
+
+                # Check for breaches
+                numBreaches = self.checkPasswordForBreaches(password)
+                
+                # Update label with breach information
+                if numBreaches > 0:
+                    self.lblAPIResponse.config(text=f"This password has been found in {numBreaches} breaches. \nIt is recommended you change your password now.")  
+                else:
+                    self.lblAPIResponse.config(text="This password has not been found in any breaches.")
+                self.after(5000, lambda: self.lblAPIResponse.config(text=""))
+            else: 
+                print("No password was found for the selected service.")
+        else: 
+            print("No service selected.")
+
+
+
+    def checkPasswordForBreaches(self, password):
+        sha1password = hashlib.sha1(password.encode()).hexdigest().upper()
+        prefix, suffix = sha1password[:5], sha1password[5:]
+
+        #* Send request to API
+        response = requests.get(f"https://api.pwnedpasswords.com/range/{prefix}")
+
+        #* Check whether or not the response was a success.
+        if response.status_code == 200:
+            for line in response.text.splitlines():
+                if line.startswith(suffix):
+                    return int(line.split(":")[1])
+            return 0
+        else:
+            print(f"Error: {response.status_code}")
+
+    #! other functions continue here.
+
+    def sendDeletePassRequest(self): #* Fetch currently selected service, and send it to the database to get wiped.
+        curItem = self.serviceView.item(self.serviceView.focus())['values']
+        if curItem:
+            service = curItem[0]
+            data.deletePassword(service)
+            self.updateLabels()
 
     def sendLoginDetails(self):
         usernameToSend = self.userNameEntry.get()
@@ -129,6 +258,8 @@ class PassManger(tk.Frame):
         serviceToSend = self.serviceEntry.get()
 
         data.createPassword(password=passwordToSend, owner=userID, service=serviceToSend, username=usernameToSend)
+
+        self.buildMainWindow() #* Send user back, so there is an indication they created their password.
 
     def sendCreationDetails(self):
         usernameToSend = self.userNameEntry.get()
@@ -237,7 +368,6 @@ class PassManger(tk.Frame):
         self.pack()
 
     def loggedInNoVaultWindow(self):
-        print("AAAAA")
         self.alzheimers()
         
         self.Frame = tk.Frame(self)
@@ -286,13 +416,19 @@ class PassManger(tk.Frame):
         self.lblSlctService.grid(column=1, row=1, padx=25)
 
         self.lblSlctUN = ttk.Label(self.Frame, text="")
-        self.lblSlctUN.grid(column=1, row=3)
+        self.lblSlctUN.grid(column=1, row=2)
 
         self.lblSlctPass = ttk.Label(self.Frame, text="")
-        self.lblSlctPass.grid(column=1, row=5)
+        self.lblSlctPass.grid(column=1, row=3)
+
+        self.lblAPIResponse = ttk.Label(self.Frame, text="")
+        self.lblAPIResponse.grid(column=1, row=5, pady=1)
 
         self.btnAddPassword = ttk.Button(self.Frame, text="+", command=self.buildServiceAddition)
-        self.btnAddPassword.grid(column=0, row=7, pady=3)
+        self.btnAddPassword.grid(column=0, row=7, pady=3, padx=(0,100))
+
+        self.btnDelPassword = ttk.Button(self.Frame, text="-", command=self.sendDeletePassRequest)
+        self.btnDelPassword.grid(column=0, row=7, padx=(100,0))
 
         self.btnLockVault = ttk.Button(self.Frame, text="Lock vault", command=self.loggedInNoVaultWindow)
         self.btnLockVault.grid(column=1, row=7)
@@ -333,7 +469,7 @@ class PassManger(tk.Frame):
         self.btnLogin = ttk.Button(self.Frame, text="Add to vault", command=self.sendPassCreationDetails) 
         self.btnLogin.grid(row=7, column=0)
 
-        self.btnRegister = ttk.Button(self.Frame, text="Cancel", command=self.buildMainWindow) #! Pass for now
+        self.btnRegister = ttk.Button(self.Frame, text="Cancel", command=self.buildMainWindow) #! Pass for now, cause that makes sense
         self.btnRegister.grid(row=7, column=1)
 
         self.pack()

@@ -24,16 +24,28 @@ class PassData():
         print(fetchedUser[0])
         return fetchedUser[0]
 
+    def getCredentialsForService(self, service, uID):
+        c = self.db.cursor()
+        c.execute("""SELECT username, password FROM Passwords WHERE service = ? AND owner = ?""", (service, uID))
+        credentials = c.fetchone()
+        if credentials:
+            return credentials
+        else:
+            print(f"No credentials found for service: {service}")
+            return None
+
+
     def getSavedPasswordWebsites(self, id): #* function to return the websites that the user has saved their passwords for.
         c = self.db.cursor()
         c.execute("""SELECT service FROM Passwords WHERE owner = ?""", [id])
 
         services = []
-        for service in c:
-            print(c.fetchone[0])
-            services.append((c.fetchone[0]))
+        for service in c.fetchall():
+            print(service[0])
+            services.append((service[0]))
 
         return services
+
 
     def checkMasterPassword(self, UID="", enteredPassword=""):
         self.validMasterPass = False #* Reset it just in case.
@@ -192,8 +204,14 @@ class PassData():
     def deleteUser(self):
         pass #! MAKE SURE IT ALSO DELETES ALL THE PASSWORDS ASSOCIATED TO THE SAME USER
 
-    def deletePassword(self):
-        pass
+    def deletePassword(self, service):
+        #? Should I really need to implement some sort of check here?
+        #! Nah fuck it, we ball.
+        print("Attempting to delete selected password")
+        c = self.db.cursor()
+        c.execute('''DELETE FROM Passwords WHERE service = ?''', [service])
+        print("Deleted it")
+        self.db.commit()
 
     def editPassword(self):
         pass
@@ -222,10 +240,7 @@ class PassData():
                 owner INTEGER, 
                 service TEXT,
                 password TEXT,
-                username TEXT);''')
-                #* Supposed to be a boolean value, but SQLite doesn't support bools natively.
-                #* So good ol' INT coming to save the day here.
-                #* 0 for false, 1 for true.   
+                username TEXT);''')  
         except:
             print("Table 'Passwords' already exists... \nPassing...")
             
