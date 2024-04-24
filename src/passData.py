@@ -173,6 +173,9 @@ class PassData():
                         lastLoggedUser["LastLogDict"]["lastLoggedUser"] = fetchedID[0]
                         print("Valid credentials... \nLogging in...")
 
+                        with open("assets/lastLogin.json", "w") as lastLogin:
+                            json.dump(lastLoggedUser, lastLogin, indent=4)  
+
                     else: 
                         print(f"Failed to retrieve user ID for {userName}...")
                         self.accountIssue = "Error while logging in."
@@ -185,9 +188,6 @@ class PassData():
 
         except Exception as e:
             print("Error during login:", e)
-
-        with open("assets/lastLogin.json", "w") as lastLogin:
-            json.dump(lastLoggedUser, lastLogin, indent=4)
         
         return validLogin, self.accountIssue
             
