@@ -293,7 +293,7 @@ class PassManger(tk.Frame):
         if len(data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
             self.updateLabels()
         else: #* Successful login, update the entire window.
-            self.updateLoginWindow()
+            self.buildMainWindow() #* no need to send the user the the master password window, just let them through.
             #* clear entries only here, or else the user will be forced to retype EVERYTHING instead of just retrying the thing that errored.
             self.passwordEntry.delete(0, tk.END)
             self.userNameEntry.delete(0, tk.END)
@@ -363,7 +363,7 @@ class PassManger(tk.Frame):
         self.emailEntry = ttk.Entry(self.Frame)
         self.emailEntry.grid(row=4, column=0, columnspan=2)
 
-        self.lblPass = ttk.Label(self.Frame, text="Password")
+        self.lblPass = ttk.Label(self.Frame, text="Master password")
         self.lblPass.grid(row=5, column=0, columnspan=2)
 
         self.passwordEntry = ttk.Entry(self.Frame, text="Password", show="\u2022") #! u2022 is for the bullet symbol to hide the user's password.and
@@ -371,7 +371,7 @@ class PassManger(tk.Frame):
         #? Depends on if TKinter allows that.
         self.passwordEntry.grid(row=6, column=0, columnspan=2)
 
-        self.lblRptPass = ttk.Label(self.Frame, text="Confirm password")
+        self.lblRptPass = ttk.Label(self.Frame, text="Confirm master password")
         self.lblRptPass.grid(row=7, column=0, columnspan=2)
 
         self.rptPassEntry = ttk.Entry(self.Frame, text="Confirm Password", show="\u2022")
