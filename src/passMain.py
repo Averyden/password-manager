@@ -1,9 +1,8 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import json
-import requests
-import hashlib
-import time
+import requests, hashlib, time #* All these libraries are for sending and receiving data to the haveibeenpwned API.
+#? Although the time library is just to show and hide the result in the ui after five seconds.
 from passData import PassData
 
 data = PassData()
@@ -83,10 +82,15 @@ class PassManger(tk.Frame):
         self.updateLoginWindow()
 
     def onPasswordSelect(self, event):
+        
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if len(curItem) > 0:
             self.clearPasswordButtons()
             service = curItem[0]
+            #* Reopen the JSON file so that it can actually read things when the user logged in for the first time, else the UID is set to none
+            #* Which isnt really very good.
+            with open("assets/lastLogin.json") as lastLogin:
+                lastLoggedUser = json.load(lastLogin)
             uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
             credentials = data.getCredentialsForService(service, uID)
             if credentials:
@@ -215,6 +219,8 @@ class PassManger(tk.Frame):
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
         data.loginUser(userName=usernameToSend, password=passwordToSend)
+        self.passwordEntry.delete(0, tk.END) #* Clear the entry so that it doesnt carry over Buhh
+        self.userNameEntry.delete(0, tk.END)
 
         #* Reopen the file to read the updated content 
         #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
@@ -230,6 +236,7 @@ class PassManger(tk.Frame):
 
     def sendVaultUnlockRequest(self):
         passwordToTry = self.entryMPass.get()
+        self.entryMPass.delete(0, tk.END) #* Clear the entry
 
         #* Reopen the file to read the updated content 
         #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
@@ -248,7 +255,7 @@ class PassManger(tk.Frame):
             self.updateLabels()
          #* Parse user ID and entered master password to send to the database.
 
-    def sendPassCreationDetails(self):
+    def sendPassCreationDetails(self): #! For creating the service with the password
         #* Reopen the file to read the updated content 
         with open("assets/lastLogin.json") as lastLogin:
             lastLoggedUser = json.load(lastLogin)
@@ -256,16 +263,24 @@ class PassManger(tk.Frame):
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
         serviceToSend = self.serviceEntry.get()
+        self.passwordEntry.delete(0, tk.END)
+        self.serviceEntry.delete(0, tk.END) 
+        self.userNameEntry.delete(0, tk.END)
 
         data.createPassword(password=passwordToSend, owner=userID, service=serviceToSend, username=usernameToSend)
 
         self.buildMainWindow() #* Send user back, so there is an indication they created their password.
 
-    def sendCreationDetails(self):
+    def sendCreationDetails(self): #! To create the user
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
         confirmationToSend = self.rptPassEntry.get()
         emailToSend = self.emailEntry.get()
+        self.passwordEntry.delete(0, tk.END)
+        self.userNameEntry.delete(0, tk.END)
+        self.rptPassEntry.delete(0, tk.END)
+        self.emailEntry.delete(0, tk.END)
+
         data.createUser(name=usernameToSend, email=emailToSend, password=passwordToSend, confirmation=confirmationToSend)
 
         #* Reopen the file to read the updated content 
