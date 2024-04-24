@@ -74,7 +74,7 @@ class PassManger(tk.Frame):
 
     def logOut(self):
         lastLoggedUser["LastLogDict"]["Loggedin"] = False
-        lastLoggedUser["LastLogDict"]["lastLoggedUser"] = "none"
+        lastLoggedUser["LastLogDict"]["lastLoggedUser"] = "0"
         
         with open("assets/lastLogin.json", "w") as lastLogin:
             json.dump(lastLoggedUser, lastLogin, indent=4)
@@ -99,13 +99,13 @@ class PassManger(tk.Frame):
                 self.lblSlctUN.config(text=f"Username: {username}")
                 self.lblSlctPass.config(text="Password: " + "\u2022" * len(password))
 
-                self.btnCheck = ttk.Button(self.Frame, text="Check", command=self.sendPasswordCheck)
+                self.btnCheck = ttk.Button(self.Frame, text="Check breaches", command=self.sendPasswordCheck)
                 self.btnCheck.grid(row=4, column=1, padx=(0,250))
 
                 self.btnShow = ttk.Button(self.Frame, text="Show", command=self.togglePasswordVisibility)
                 self.btnShow.grid(row=4, column=1, padx=(250,250))
 
-                self.btnCopy = ttk.Button(self.Frame, text="Copy", command=self.copyPasswordToClip)
+                self.btnCopy = ttk.Button(self.Frame, text="Copy to clipboard", command=self.copyPasswordToClip)
                 self.btnCopy.grid(row=4, column=1, padx=(250,0))
             else:
                print("No credentials found for selected thingy.")
@@ -225,8 +225,7 @@ class PassManger(tk.Frame):
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
         data.loginUser(userName=usernameToSend, password=passwordToSend)
-        self.passwordEntry.delete(0, tk.END) #* Clear the entry so that it doesnt carry over Buhh
-        self.userNameEntry.delete(0, tk.END)
+       
 
         #* Reopen the file to read the updated content 
         #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
@@ -237,6 +236,8 @@ class PassManger(tk.Frame):
             self.updateLabels()
         else: #* Successful login, update the entire window.
             self.updateLoginWindow()
+            self.passwordEntry.delete(0, tk.END) #* Clear the entry so that it doesnt carry over Buhh
+            self.userNameEntry.delete(0, tk.END)
 
         print(f"Sender says: {lastLoggedUser['LastLogDict']['Loggedin']}")
 
