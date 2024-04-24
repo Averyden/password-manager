@@ -125,6 +125,8 @@ class PassManger(tk.Frame):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if curItem:
             service = curItem[0]
+            with open("assets/lastLogin.json") as lastLogin:
+                lastLoggedUser = json.load(lastLogin)
             uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
             credentials = data.getCredentialsForService(service, uID)
             if credentials:
@@ -146,6 +148,8 @@ class PassManger(tk.Frame):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if curItem:
             service = curItem[0]
+            with open("assets/lastLogin.json") as lastLogin:
+                lastLoggedUser = json.load(lastLogin)
             uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
             credentials = data.getCredentialsForService(service, uID)
             if credentials: #* Check if something got fetched.
@@ -169,6 +173,8 @@ class PassManger(tk.Frame):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if curItem:
             service = curItem[0]
+            with open("assets/lastLogin.json") as lastLogin:
+                lastLoggedUser = json.load(lastLogin)
             uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
             credentials = data.getCredentialsForService(service, uID)
             if credentials: 
@@ -276,10 +282,6 @@ class PassManger(tk.Frame):
         passwordToSend = self.passwordEntry.get()
         confirmationToSend = self.rptPassEntry.get()
         emailToSend = self.emailEntry.get()
-        self.passwordEntry.delete(0, tk.END)
-        self.userNameEntry.delete(0, tk.END)
-        self.rptPassEntry.delete(0, tk.END)
-        self.emailEntry.delete(0, tk.END)
 
         data.createUser(name=usernameToSend, email=emailToSend, password=passwordToSend, confirmation=confirmationToSend)
 
@@ -292,6 +294,11 @@ class PassManger(tk.Frame):
             self.updateLabels()
         else: #* Successful login, update the entire window.
             self.updateLoginWindow()
+            #* clear entries only here, or else the user will be forced to retype EVERYTHING instead of just retrying the thing that errored.
+            self.passwordEntry.delete(0, tk.END)
+            self.userNameEntry.delete(0, tk.END)
+            self.rptPassEntry.delete(0, tk.END)
+            self.emailEntry.delete(0, tk.END)
 
         print(f"Sender says: {lastLoggedUser['LastLogDict']['Loggedin']}")
 
