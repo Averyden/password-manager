@@ -89,7 +89,7 @@ class PassData():
             print("Invalid confirmation...\n")
             return self.accountIssue
 
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", email):
             self.accountIssue = "Please provide a valid email address."
             print("Invalid email address provided...\n")
             return self.accountIssue
