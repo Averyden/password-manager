@@ -470,7 +470,7 @@ class PassManger(tk.Frame):
         self.lblSlct = ttk.Label(self.Frame, text="Add password to vault")
         self.lblSlct.grid(column=0, row=0, columnspan=2)
 
-        self.lblSrvice = ttk.Label(self.Frame, text="Service")
+        self.lblSrvice = ttk.Label(self.Frame, text="Name of service")
         self.lblSrvice.grid(row=1, column=0, columnspan=2)
 
         self.serviceEntry = ttk.Entry(self.Frame, text="Service")
