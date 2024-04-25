@@ -269,13 +269,16 @@ class PassManger(tk.Frame):
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
         serviceToSend = self.serviceEntry.get()
-        self.passwordEntry.delete(0, tk.END)
-        self.serviceEntry.delete(0, tk.END) 
-        self.userNameEntry.delete(0, tk.END)
+      
 
         data.createPassword(password=passwordToSend, owner=userID, service=serviceToSend, username=usernameToSend)
-
-        self.buildMainWindow() #* Send user back, so there is an indication they created their password.
+        if len(data.accountIssue) != 0: #* if there is an issue, stop code in its tracks.abs
+            self.updateLabels()
+        else:
+            self.buildMainWindow() #* Send user back, so there is an indication they created their password.
+            self.passwordEntry.delete(0, tk.END)
+            self.serviceEntry.delete(0, tk.END) 
+            self.userNameEntry.delete(0, tk.END)
 
     def sendCreationDetails(self): #! To create the user
         usernameToSend = self.userNameEntry.get()
@@ -488,11 +491,14 @@ class PassManger(tk.Frame):
         #? Depends on if TKinter allows that.
         self.passwordEntry.grid(row=6, column=0, columnspan=2)
 
+        self.lblAccountIssue = ttk.Label(self.Frame, text="")
+        self.lblAccountIssue.grid(row=7, column=0, columnspan=2)
+
         self.btnLogin = ttk.Button(self.Frame, text="Add to vault", command=self.sendPassCreationDetails) 
-        self.btnLogin.grid(row=7, column=0)
+        self.btnLogin.grid(row=8, column=0)
 
         self.btnRegister = ttk.Button(self.Frame, text="Cancel", command=self.buildMainWindow) #! Pass for now, cause that makes sense
-        self.btnRegister.grid(row=7, column=1)
+        self.btnRegister.grid(row=8, column=1)
 
         self.pack()
 
