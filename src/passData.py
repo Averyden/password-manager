@@ -73,6 +73,12 @@ class PassData():
                 print("No username provided for registration...\n")
                 return self.accountIssue
             return self.accountIssue
+
+        #* Check username for special characters and/or spaces.
+        if not re.match(r"^\S+$", name):
+            self.accountIssue = "Username must not contain special characters."
+            print("Invalid username containing special characters... \n")
+            return self.accountIssue
         
         if len(password) <= 2:
             self.accountIssue = "Password must be longer than two characters."
@@ -85,7 +91,7 @@ class PassData():
 
         #* Make a check to see if the confirmed password is the same as the password
         if confirmation != password:
-            self.accountIssue = "Confirm password does not match password."
+            self.accountIssue = "Passwords do not match password."
             print("Invalid confirmation...\n")
             return self.accountIssue
 
@@ -197,7 +203,7 @@ class PassData():
         if owner == 0:
             print("Can't create new password. \n \nOwner value can't be of null.")
         else:
-            if not re.match(r'^\S+$', service): #* If theres any sort of special characters in there.
+            if not re.match(r"^\S+$", service): #* If theres any sort of special characters in there.
                 self.accountIssue = "Please avoid using spaces and/or special characters in service name."
                 return self.accountIssue    
 
