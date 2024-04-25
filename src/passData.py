@@ -91,7 +91,7 @@ class PassData():
 
         #* Make a check to see if the confirmed password is the same as the password
         if confirmation != password:
-            self.accountIssue = "Passwords do not match password."
+            self.accountIssue = "Passwords do not match."
             print("Invalid confirmation...\n")
             return self.accountIssue
 
