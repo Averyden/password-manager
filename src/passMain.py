@@ -23,11 +23,17 @@ class PassManger(tk.Frame):
         
         self.updateLoginWindow()
 
+    def openJSONfile(self): #* Prevent having to constantly open the json file in the code, making the code less messy.
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
+
+
     def updateLabels(self):
 
         #* Reopen the file to read the updated content 
         #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
         #? There might be, not bothered to look for it tho :)
+        #! this exact one must be kept, as it breaks if i try to incorporate the function into replacing this one here.
         with open("assets/lastLogin.json") as lastLogin:
             lastLoggedUser = json.load(lastLogin)
             
@@ -56,10 +62,8 @@ class PassManger(tk.Frame):
     
     def updateLoginWindow(self):
 
-        #* Reopen the file to read the updated content 
-        #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
-        with open("assets/lastLogin.json") as lastLogin:
-            lastLoggedUser = json.load(lastLogin)
+        
+        self.openJSONfile()
 
         print(f"Update label says: {lastLoggedUser['LastLogDict']['Loggedin']}")
         if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
@@ -89,8 +93,7 @@ class PassManger(tk.Frame):
             service = curItem[0]
             #* Reopen the JSON file so that it can actually read things when the user logged in for the first time, else the UID is set to none
             #* Which isnt really very good.
-            with open("assets/lastLogin.json") as lastLogin:
-                lastLoggedUser = json.load(lastLogin)
+            self.openJSONfile()
             uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
             credentials = data.getCredentialsForService(service, uID)
             if credentials:
@@ -125,8 +128,8 @@ class PassManger(tk.Frame):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if curItem:
             service = curItem[0]
-            with open("assets/lastLogin.json") as lastLogin:
-                lastLoggedUser = json.load(lastLogin)
+            self.openJSONfile()
+
             uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
             credentials = data.getCredentialsForService(service, uID)
             if credentials:
@@ -148,8 +151,8 @@ class PassManger(tk.Frame):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if curItem:
             service = curItem[0]
-            with open("assets/lastLogin.json") as lastLogin:
-                lastLoggedUser = json.load(lastLogin)
+            self.openJSONfile()
+
             uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
             credentials = data.getCredentialsForService(service, uID)
             if credentials: #* Check if something got fetched.
@@ -173,8 +176,8 @@ class PassManger(tk.Frame):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if curItem:
             service = curItem[0]
-            with open("assets/lastLogin.json") as lastLogin:
-                lastLoggedUser = json.load(lastLogin)
+            self.openJSONfile()
+
             uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
             credentials = data.getCredentialsForService(service, uID)
             if credentials: 
@@ -226,10 +229,7 @@ class PassManger(tk.Frame):
         passwordToSend = self.passwordEntry.get()
         data.loginUser(userName=usernameToSend, password=passwordToSend)
     
-        #* Reopen the file to read the updated content 
-        #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
-        with open("assets/lastLogin.json") as lastLogin:
-            lastLoggedUser = json.load(lastLogin)
+        self.openJSONfile()
 
         if len(data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
             self.updateLabels()
@@ -240,14 +240,15 @@ class PassManger(tk.Frame):
 
         print(f"Sender says: {lastLoggedUser['LastLogDict']['Loggedin']}")
 
+
     def sendVaultUnlockRequest(self):
         passwordToTry = self.entryMPass.get()
         self.entryMPass.delete(0, tk.END) #* Clear the entry
 
         #* Reopen the file to read the updated content 
         #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
-        with open("assets/lastLogin.json") as lastLogin:
-            lastLoggedUser = json.load(lastLogin)
+        
+        self.openJSONfile()
 
         data.checkMasterPassword(UID=lastLoggedUser['LastLogDict']['lastLoggedUser'], enteredPassword=passwordToTry)
         print(data.validMasterPass)
@@ -263,8 +264,8 @@ class PassManger(tk.Frame):
 
     def sendPassCreationDetails(self): #! For creating the service with the password
         #* Reopen the file to read the updated content 
-        with open("assets/lastLogin.json") as lastLogin:
-            lastLoggedUser = json.load(lastLogin)
+        self.openJSONfile()
+
         userID = lastLoggedUser['LastLogDict']['lastLoggedUser']
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
@@ -288,10 +289,7 @@ class PassManger(tk.Frame):
 
         data.createUser(name=usernameToSend, email=emailToSend, password=passwordToSend, confirmation=confirmationToSend)
 
-        #* Reopen the file to read the updated content 
-        #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
-        with open("assets/lastLogin.json") as lastLogin:
-            lastLoggedUser = json.load(lastLogin)
+        self.openJSONfile()
     
         if len(data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
             self.updateLabels()
