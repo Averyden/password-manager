@@ -197,9 +197,14 @@ class PassData():
         if owner == 0:
             print("Can't create new password. \n \nOwner value can't be of null.")
         else:
-            c = self.db.cursor()
-            c.execute('''INSERT INTO Passwords (owner, service, password, username) VALUES (?,?,?,?)''', [owner, service, password, username])
-            self.db.commit()
+            if not re.match(r'^\S+$', service): #* If theres any sort of special characters in there.
+                self.accountIssue = "Please avoid using spaces and/or special characters in service name."
+                return self.accountIssue    
+
+            else:
+                c = self.db.cursor()
+                c.execute('''INSERT INTO Passwords (owner, service, password, username) VALUES (?,?,?,?)''', [owner, service, password, username])
+                self.db.commit()
 
     def deleteUser(self):
         pass #! MAKE SURE IT ALSO DELETES ALL THE PASSWORDS ASSOCIATED TO THE SAME USER
