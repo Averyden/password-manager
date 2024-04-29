@@ -23,9 +23,6 @@ class PassManger(tk.Frame):
         
         self.updateLoginWindow()
 
-    def openJSONfile(self): #* Prevent having to constantly open the json file in the code, making the code less messy.
-        with open("assets/lastLogin.json") as lastLogin:
-            lastLoggedUser = json.load(lastLogin)
 
 
     def updateLabels(self):
@@ -63,7 +60,8 @@ class PassManger(tk.Frame):
     def updateLoginWindow(self):
 
         
-        self.openJSONfile()
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
 
         print(f"Update label says: {lastLoggedUser['LastLogDict']['Loggedin']}")
         if lastLoggedUser["LastLogDict"]["Loggedin"] == True:
@@ -93,7 +91,8 @@ class PassManger(tk.Frame):
             service = curItem[0]
             #* Reopen the JSON file so that it can actually read things when the user logged in for the first time, else the UID is set to none
             #* Which isnt really very good.
-            self.openJSONfile()
+            with open("assets/lastLogin.json") as lastLogin:
+                lastLoggedUser = json.load(lastLogin)
             uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
             credentials = data.getCredentialsForService(service, uID)
             if credentials:
@@ -128,7 +127,8 @@ class PassManger(tk.Frame):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if curItem:
             service = curItem[0]
-            self.openJSONfile()
+            with open("assets/lastLogin.json") as lastLogin:
+                lastLoggedUser = json.load(lastLogin)
 
             uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
             credentials = data.getCredentialsForService(service, uID)
@@ -151,7 +151,8 @@ class PassManger(tk.Frame):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if curItem:
             service = curItem[0]
-            self.openJSONfile()
+            with open("assets/lastLogin.json") as lastLogin:
+                lastLoggedUser = json.load(lastLogin)
 
             uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
             credentials = data.getCredentialsForService(service, uID)
@@ -176,7 +177,8 @@ class PassManger(tk.Frame):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if curItem:
             service = curItem[0]
-            self.openJSONfile()
+            with open("assets/lastLogin.json") as lastLogin:
+                lastLoggedUser = json.load(lastLogin)
 
             uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
             credentials = data.getCredentialsForService(service, uID)
@@ -229,7 +231,8 @@ class PassManger(tk.Frame):
         passwordToSend = self.passwordEntry.get()
         data.loginUser(userName=usernameToSend, password=passwordToSend)
     
-        self.openJSONfile()
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
 
         if len(data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
             self.updateLabels()
@@ -247,8 +250,10 @@ class PassManger(tk.Frame):
 
         #* Reopen the file to read the updated content 
         #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
+        #? READER'S ADDED COMMENT: "YOU STUPIDDDDD"
         
-        self.openJSONfile()
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
 
         data.checkMasterPassword(UID=lastLoggedUser['LastLogDict']['lastLoggedUser'], enteredPassword=passwordToTry)
         print(data.validMasterPass)
@@ -264,7 +269,8 @@ class PassManger(tk.Frame):
 
     def sendPassCreationDetails(self): #! For creating the service with the password
         #* Reopen the file to read the updated content 
-        self.openJSONfile()
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
 
         userID = lastLoggedUser['LastLogDict']['lastLoggedUser']
         usernameToSend = self.userNameEntry.get()
@@ -289,7 +295,8 @@ class PassManger(tk.Frame):
 
         data.createUser(name=usernameToSend, email=emailToSend, password=passwordToSend, confirmation=confirmationToSend)
 
-        self.openJSONfile()
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
     
         if len(data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
             self.updateLabels()
@@ -500,7 +507,7 @@ class PassManger(tk.Frame):
 
         self.pack()
 
-
+#!Joe Rogan was here, wanna come to MMA400?
 prg = PassManger()
 prg.master.title('Password Manager')
 prg.mainloop()
