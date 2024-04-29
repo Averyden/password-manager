@@ -207,6 +207,14 @@ class PassData():
                 self.accountIssue = "Please avoid using spaces and/or special characters in service name."
                 return self.accountIssue    
 
+            elif len(service) <= 1 or len(service) >= 21: #* Add an arbitrary character limit, to prevent overflow.
+                self.accountIssue = "If the name of the service you're using is longer than 21 characters: \nplease provide a nickname for the service."
+                return self.accountIssue
+            elif len(username) <= 2 or len(username) > 20:
+                self.accountIssue = "Please provide a username between 3 and 20 characters."
+                return self.accountIssue
+            elif len(password) <= 2 or len(password) > 32: #* Allow password to be longer than username, as the password should be the most secure bit.
+                self.accountIssue = "Make sure your password is between 3 and 32 characters."
             else:
                 c = self.db.cursor()
                 c.execute('''INSERT INTO Passwords (owner, service, password, username) VALUES (?,?,?,?)''', [owner, service, password, username])
