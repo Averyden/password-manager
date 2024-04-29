@@ -250,7 +250,6 @@ class PassManger(tk.Frame):
 
         #* Reopen the file to read the updated content 
         #! WHY ISNT THERE A BETTER WAY TO DO THIS 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭
-        #? READER'S ADDED COMMENT: "YOU STUPIDDDDD"
         
         with open("assets/lastLogin.json") as lastLogin:
             lastLoggedUser = json.load(lastLogin)
