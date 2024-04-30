@@ -231,8 +231,11 @@ class PassData():
         c.execute('''DELETE FROM Passwords WHERE service = ?''', [service])
         print("Deleted it")
         self.db.commit()
-
-    def editPassword(self):
+    
+    def updateDetailsForService(self): #* For when the exam is over, ill work on implementing this
+        pass
+  
+    def editMPassword(self):
         pass
 
     def updateUser(self): #* Updating user details incase they get a new email.
