@@ -506,7 +506,6 @@ class PassManger(tk.Frame):
 
         self.pack()
 
-#!Joe Rogan was here, wanna come to MMA400?
 prg = PassManger()
 prg.master.title('Password Manager')
 prg.mainloop()
