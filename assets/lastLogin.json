@@ -1,7 +1,7 @@
 {
     "LastLogDict": {
-        "Loggedin": true,
-        "lastLoggedUser": 7,
+        "Loggedin": false,
+        "lastLoggedUser": "0",
         "currentlyLoggedIn": false
     }
 }
