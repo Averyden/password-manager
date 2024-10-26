@@ -235,9 +235,9 @@ class PassData():
         c.execute('''DELETE FROM Passwords WHERE owner = ?''', [id])
         self.db.commit()
 
-        lastLoggedUser["LastLogDict"]["Loggedin"] = false
+        lastLoggedUser["LastLogDict"]["Loggedin"] = False
         lastLoggedUser["LastLogDict"]["lastLoggedUser"] = None #* Reset the JSON or else the program becomes unuseable
-        
+
         
         self.ui.buildUIStart1() #* Send user back to the first ever menu, as their account is gone.
 
