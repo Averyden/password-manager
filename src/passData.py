@@ -9,8 +9,10 @@ except Exception as e:
     print("Error loading JSON:", e)
 
 class PassData():
-    def __init__(self):
+    def __init__(self, uiInstance):
         self.db = sqlite3.connect("assets/passData.db")
+
+        self.ui = uiInstance
 
         self.accountIssue = "" #* Set to a global var so it can be called from the main code.
         self.validMasterPass = False #* No need to let someone in despite program just being launched.
@@ -220,9 +222,21 @@ class PassData():
                 c.execute('''INSERT INTO Passwords (owner, service, password, username) VALUES (?,?,?,?)''', [owner, service, password, username])
                 self.db.commit()
 
-    def deleteUser(self, name):
-        pass #! MAKE SURE IT ALSO DELETES ALL THE PASSWORDS ASSOCIATED TO THE SAME USER
+    def deleteUser(self, id):
+        c = self.db.cursor()
+        
+        try: 
+            c.execute('''SELECT * FROM users WHERE id = ?''', [id])
+        except Exception as userNotFoundException:
+            print("User does not exist, idk what to do.")
+            return userNotFoundException # this has no logic i just wanna look smart 
 
+        c.execute('''DELETE FROM users WHERE id = ?''', [id])
+        c.execute('''DELETE FROM Passwords WHERE owner = ?''', [id])
+        self.db.commit()
+
+      
+        
     def deletePassword(self, service):
         #? Should I really need to implement some sort of check here?
         #! Nah fuck it, we ball.
