@@ -24,11 +24,6 @@ class PassManger(tk.Frame):
         self.updateLoginWindow()
 
 
-        
-    
-
-
-
     def updateLabels(self):
 
         #* Reopen the file to read the updated content 
@@ -485,7 +480,10 @@ class PassManger(tk.Frame):
 
 
     def openUserSettings(self):
-        
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
+
+            
         try:
             self.clearSettingsWindow() # Replace it in case its being called from cancel buttons.
         except: 
