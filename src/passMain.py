@@ -5,9 +5,7 @@ import requests, hashlib, time #* All these libraries are for sending and receiv
 #? Although the time library is just to show and hide the result in the ui after five seconds.
 from passData import PassData
 
-data = PassData()
 
-data.createTables()
 
 
 try:
@@ -23,6 +21,10 @@ class PassManger(tk.Frame):
         
         self.updateLoginWindow()
 
+
+        data = PassData(self)
+
+        data.createTables()
     
 
 
@@ -507,7 +509,7 @@ class PassManger(tk.Frame):
         self.lblConfirmation = ttk.Label(self.settingsWindow, text=f"Are you sure you want to delete your account, {foundUser}?")
         self.lblConfirmation.pack(pady=10)
 
-        self.btnYes = ttk.Button(self.settingsWindow, text="Delete account", command=lambda: self.deleteAccount(foundUID))
+        self.btnYes = ttk.Button(self.settingsWindow, text="Delete account", command=lambda: data.deleteUser(foundUID))
                                 
         self.btnYes.pack(pady=5)
 
