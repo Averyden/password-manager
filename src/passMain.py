@@ -460,10 +460,15 @@ class PassManger(tk.Frame):
         self.btnDelPassword.grid(column=0, row=7, padx=(100,0))
 
         self.btnLockVault = ttk.Button(self.Frame, text="Lock vault", command=self.loggedInNoVaultWindow)
-        self.btnLockVault.grid(column=1, row=7)
+        self.btnLockVault.grid(column=2, row=7, padx=(10, 20))
+
+        self.btnUserSettings = ttk.Button(self.Frame, text="User Settings" ) #command=self.openUserSettings
+        self.btnUserSettings.grid(column=1, row=7, padx=(10, 10))
 
         self.pack()
         self.updateLabels()
+
+
 
 
     def buildServiceAddition(self):
