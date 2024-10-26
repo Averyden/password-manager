@@ -483,7 +483,7 @@ class PassManger(tk.Frame):
         with open("assets/lastLogin.json") as lastLogin:
             lastLoggedUser = json.load(lastLogin)
 
-            
+
         try:
             self.clearSettingsWindow() # Replace it in case its being called from cancel buttons.
         except: 
@@ -506,6 +506,9 @@ class PassManger(tk.Frame):
         btnClose.pack(pady=20)
 
     def confirmDeleteAccount(self):
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
+
         self.clearSettingsWindow()
         foundUser = self.data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])
 
