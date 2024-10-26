@@ -23,6 +23,8 @@ class PassManger(tk.Frame):
         
         self.updateLoginWindow()
 
+    
+
 
 
     def updateLabels(self):
@@ -69,6 +71,10 @@ class PassManger(tk.Frame):
         else:
             self.buildUIStart1() #! Build login window based on user login status.
         
+
+    def clearSettingsWindow(self):
+        for widget in self.settingsWindow.winfo_children():
+            widget.pack_forget()
 
     def alzheimers(self):
         for widget in self.winfo_children():
@@ -470,21 +476,42 @@ class PassManger(tk.Frame):
 
 
     def openUserSettings(self):
-        settingsWindow = tk.Toplevel(self)
-        settingsWindow.title("User Settings")
         
+        try:
+            self.clearSettingsWindow() # Replace it in case its being called from cancel buttons.
+        except: 
+            print("UI already doesn't exist already...\nso we create a new instance of it.") #* thank you C# :DD
+            self.settingsWindow = tk.Toplevel(self)
+            self.settingsWindow.title("User Settings")
 
-        lblUserSettings = ttk.Label(settingsWindow, text=f"User Settings for account: {data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}")#, font=("Arial", 16))
+        foundUser = data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])
+
+        lblUserSettings = ttk.Label(self.settingsWindow, text=f"User Settings for account: {foundUser}")
         lblUserSettings.pack(pady=10, padx=50)
 
-        btnEditDetails = ttk.Button(settingsWindow, text="Edit Details")#, command=self.editUserDetails)
+        btnEditDetails = ttk.Button(self.settingsWindow, text="Edit Details")  # Implement the command as needed
         btnEditDetails.pack(pady=5)
 
-        btnDeleteAccount = ttk.Button(settingsWindow, text="Delete Account") #, command=self.confirmDeleteAccount)
+        btnDeleteAccount = ttk.Button(self.settingsWindow, text="Delete Account", command=self.confirmDeleteAccount)
         btnDeleteAccount.pack(pady=5)
 
-        btnClose = ttk.Button(settingsWindow, text="Close")#, command=settings_window.destroy)
+        btnClose = ttk.Button(self.settingsWindow, text="Close", command=self.settingsWindow.destroy)
         btnClose.pack(pady=20)
+
+    def confirmDeleteAccount(self):
+        self.clearSettingsWindow()
+        foundUser = data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])
+
+        self.lblConfirmation = ttk.Label(self.settingsWindow, text=f"Are you sure you want to delete your account, {foundUser}?")
+        self.lblConfirmation.pack(pady=10)
+
+        self.btnYes = ttk.Button(self.settingsWindow, text="Delete account", command=lambda: self.deleteAccount(foundUser))
+                                
+        self.btnYes.pack(pady=5)
+
+        self.btnCancel = ttk.Button(self.settingsWindow, text="Cancel", command=self.openUserSettings)
+        self.btnCancel.pack(pady=5)
+
 
     def buildServiceAddition(self):
         self.alzheimers()
