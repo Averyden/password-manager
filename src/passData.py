@@ -233,7 +233,7 @@ class PassData():
         self.db.commit()
     
     def updateDetailsForService(self): #* For when the exam is over, ill work on implementing this
-        pass
+        pass #! Note from 6 months in the future... nah i cant be bothered to touch this project anymore
   
     def editMPassword(self):
         pass
