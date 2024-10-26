@@ -5,10 +5,6 @@ import requests, hashlib, time #* All these libraries are for sending and receiv
 #? Although the time library is just to show and hide the result in the ui after five seconds.
 from passData import PassData
 
-data = PassData()
-
-data.createTables()
-
 
 try:
     with open("assets/lastLogin.json") as lastLogin:
@@ -21,8 +17,11 @@ class PassManger(tk.Frame):
         tk.Frame.__init__(self)
         self.showingPassword = False
         
-        self.updateLoginWindow()
+        self.data = PassData(self)
 
+        self.data.createTables()
+
+        self.updateLoginWindow()
 
 
     def updateLabels(self):
@@ -35,16 +34,16 @@ class PassManger(tk.Frame):
             lastLoggedUser = json.load(lastLogin)
             
             try:
-                self.lblAccountIssue.configure(text=f"{data.accountIssue}")
+                self.lblAccountIssue.configure(text=f"{self.data.accountIssue}")
             except:
                 pass
 
             if lastLoggedUser["LastLogDict"]["Loggedin"] == True: #* If user is logged in
-                self.lblSlct.configure(text=f"Welcome, {data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}.")
+                self.lblSlct.configure(text=f"Welcome, {self.data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}.")
                 try:
-                    self.lblMainAccount.configure(text=f"{data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}'s password vault.")
+                    self.lblMainAccount.configure(text=f"{self.data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}'s password vault.")
 
-                    services = data.getSavedPasswordWebsites(lastLoggedUser['LastLogDict']['lastLoggedUser'])
+                    services = self.data.getSavedPasswordWebsites(lastLoggedUser['LastLogDict']['lastLoggedUser'])
                     self.serviceView.delete(*self.serviceView.get_children())
                     self.clearPasswordButtons()
                     self.lblSlctService.config(text = "No selected password.")
@@ -70,6 +69,10 @@ class PassManger(tk.Frame):
             self.buildUIStart1() #! Build login window based on user login status.
         
 
+    def clearSettingsWindow(self):
+        for widget in self.settingsWindow.winfo_children():
+            widget.pack_forget()
+
     def alzheimers(self):
         for widget in self.winfo_children():
             widget.grid_forget() #? Should clear all widgets? spoiler alert: IT DOES 🥹
@@ -94,7 +97,7 @@ class PassManger(tk.Frame):
             with open("assets/lastLogin.json") as lastLogin:
                 lastLoggedUser = json.load(lastLogin)
             uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
-            credentials = data.getCredentialsForService(service, uID)
+            credentials = self.data.getCredentialsForService(service, uID)
             if credentials:
                 username, password = credentials
                 self.lblSlctService.config(text = 'Currently selected service: {}'.format(curItem[0]))
@@ -131,7 +134,7 @@ class PassManger(tk.Frame):
                 lastLoggedUser = json.load(lastLogin)
 
             uID = lastLoggedUser['LastLogDict']['lastLoggedUser']
-            credentials = data.getCredentialsForService(service, uID)
+            credentials = self.data.getCredentialsForService(service, uID)
             if credentials:
                 if self.showingPassword == False:
                     self.showingPassword = True
@@ -155,7 +158,7 @@ class PassManger(tk.Frame):
                 lastLoggedUser = json.load(lastLogin)
 
             uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
-            credentials = data.getCredentialsForService(service, uID)
+            credentials = self.data.getCredentialsForService(service, uID)
             if credentials: #* Check if something got fetched.
                 username, password = credentials 
                 #* We wont be using the username variable, but we will but using the password.
@@ -181,7 +184,7 @@ class PassManger(tk.Frame):
                 lastLoggedUser = json.load(lastLogin)
 
             uID = lastLoggedUser["LastLogDict"]["lastLoggedUser"]
-            credentials = data.getCredentialsForService(service, uID)
+            credentials = self.data.getCredentialsForService(service, uID)
             if credentials: 
                 username, password = credentials 
 
@@ -223,21 +226,22 @@ class PassManger(tk.Frame):
         curItem = self.serviceView.item(self.serviceView.focus())['values']
         if curItem:
             service = curItem[0]
-            data.deletePassword(service)
+            self.data.deletePassword(service)
             self.updateLabels()
 
     def sendLoginDetails(self):
         usernameToSend = self.userNameEntry.get()
         passwordToSend = self.passwordEntry.get()
-        data.loginUser(userName=usernameToSend, password=passwordToSend)
+        self.data.loginUser(userName=usernameToSend, password=passwordToSend)
     
         with open("assets/lastLogin.json") as lastLogin:
             lastLoggedUser = json.load(lastLogin)
 
-        if len(data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
+        if len(self.data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
             self.updateLabels()
         else: #* Successful login, update the entire window.
-            self.updateLoginWindow()
+            self.buildMainWindow() #* We just logged in, no need to retype pasword
+            #self.updateLoginWindow()
             self.passwordEntry.delete(0, tk.END) #* Clear the entry so that it doesnt carry over Buhh
             self.userNameEntry.delete(0, tk.END)
 
@@ -254,15 +258,15 @@ class PassManger(tk.Frame):
         with open("assets/lastLogin.json") as lastLogin:
             lastLoggedUser = json.load(lastLogin)
 
-        data.checkMasterPassword(UID=lastLoggedUser['LastLogDict']['lastLoggedUser'], enteredPassword=passwordToTry)
-        print(data.validMasterPass)
+        self.data.checkMasterPassword(UID=lastLoggedUser['LastLogDict']['lastLoggedUser'], enteredPassword=passwordToTry)
+        print(self.data.validMasterPass)
         
-        #* Check whether or not the master password was a success utilizing the variabel in the data code.
-        if data.validMasterPass == True:
+        #* Check whether or not the master password was a success utilizing the variabel in the self.data code.
+        if self.data.validMasterPass == True:
             self.buildMainWindow()
-            data.accountIssue = "" #* Reset accountIssue var incase user got the password wrong first try.
+            self.data.accountIssue = "" #* Reset accountIssue var incase user got the password wrong first try.
         else:
-            data.accountIssue = "Invalid master password."
+            self.data.accountIssue = "Invalid master password."
             self.updateLabels()
          #* Parse user ID and entered master password to send to the database.
 
@@ -277,8 +281,8 @@ class PassManger(tk.Frame):
         serviceToSend = self.serviceEntry.get()
       
 
-        data.createPassword(password=passwordToSend, owner=userID, service=serviceToSend, username=usernameToSend)
-        if len(data.accountIssue) != 0: #* if there is an issue, stop code in its tracks.abs
+        self.data.createPassword(password=passwordToSend, owner=userID, service=serviceToSend, username=usernameToSend)
+        if len(self.data.accountIssue) != 0: #* if there is an issue, stop code in its tracks.abs
             self.updateLabels()
         else:
             self.buildMainWindow() #* Send user back, so there is an indication they created their password.
@@ -292,12 +296,12 @@ class PassManger(tk.Frame):
         confirmationToSend = self.rptPassEntry.get()
         emailToSend = self.emailEntry.get()
 
-        data.createUser(name=usernameToSend, email=emailToSend, password=passwordToSend, confirmation=confirmationToSend)
+        self.data.createUser(name=usernameToSend, email=emailToSend, password=passwordToSend, confirmation=confirmationToSend)
 
         with open("assets/lastLogin.json") as lastLogin:
             lastLoggedUser = json.load(lastLogin)
     
-        if len(data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
+        if len(self.data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
             self.updateLabels()
         else: #* Successful login, update the entire window.
             self.buildMainWindow() #* no need to send the user the the master password window, just let them through.
@@ -315,7 +319,13 @@ class PassManger(tk.Frame):
     #! 😔
 
     def buildUIStart1(self): 
-        self.alzheimers()
+        try:
+            self.alzheimers()
+        except:
+            print("Called from deletion request, clearing both things")
+            self.settingsWindow.destroy()
+            self.alzheimers()
+        
         self.Frame = tk.Frame(self)
         self.Frame.grid(column=0, row=0)
 
@@ -460,10 +470,59 @@ class PassManger(tk.Frame):
         self.btnDelPassword.grid(column=0, row=7, padx=(100,0))
 
         self.btnLockVault = ttk.Button(self.Frame, text="Lock vault", command=self.loggedInNoVaultWindow)
-        self.btnLockVault.grid(column=1, row=7)
+        self.btnLockVault.grid(column=1, row=7, padx=(100, 20))
+
+        self.btnUserSettings = ttk.Button(self.Frame, text="User Settings", command=self.openUserSettings)
+        self.btnUserSettings.grid(column=1, row=7, padx=(0, 100))
 
         self.pack()
         self.updateLabels()
+
+
+    def openUserSettings(self):
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
+
+
+        try:
+            self.clearSettingsWindow() # Replace it in case its being called from cancel buttons.
+        except: 
+            print("UI already doesn't exist already...\nso we create a new instance of it.") #* thank you C# :DD
+            self.settingsWindow = tk.Toplevel(self)
+            self.settingsWindow.title("User Settings")
+
+        foundUser = self.data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])
+
+        lblUserSettings = ttk.Label(self.settingsWindow, text=f"User Settings for account: {foundUser}")
+        lblUserSettings.pack(pady=10, padx=50)
+
+        btnEditDetails = ttk.Button(self.settingsWindow, text="Edit Details [Soon]")  # Implement the command as needed
+        btnEditDetails.pack(pady=5)
+
+        btnDeleteAccount = ttk.Button(self.settingsWindow, text="Delete Account", command=self.confirmDeleteAccount)
+        btnDeleteAccount.pack(pady=5)
+
+        btnClose = ttk.Button(self.settingsWindow, text="Close", command=self.settingsWindow.destroy)
+        btnClose.pack(pady=20)
+
+    def confirmDeleteAccount(self):
+        with open("assets/lastLogin.json") as lastLogin:
+            lastLoggedUser = json.load(lastLogin)
+
+        self.clearSettingsWindow()
+        foundUser = self.data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])
+
+        foundUID = lastLoggedUser['LastLogDict']['lastLoggedUser'] # We fetch the UID so that we dont have to do shitty bloated logic in the database.
+
+        self.lblConfirmation = ttk.Label(self.settingsWindow, text=f"Are you sure you want to delete your account, {foundUser}?")
+        self.lblConfirmation.pack(pady=10)
+
+        self.btnYes = ttk.Button(self.settingsWindow, text="Delete account", command=lambda: self.data.deleteUser(foundUID))
+                                
+        self.btnYes.pack(pady=5)
+
+        self.btnCancel = ttk.Button(self.settingsWindow, text="Cancel", command=self.openUserSettings)
+        self.btnCancel.pack(pady=5)
 
 
     def buildServiceAddition(self):
