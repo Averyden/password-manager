@@ -489,7 +489,7 @@ class PassManger(tk.Frame):
         lblUserSettings = ttk.Label(self.settingsWindow, text=f"User Settings for account: {foundUser}")
         lblUserSettings.pack(pady=10, padx=50)
 
-        btnEditDetails = ttk.Button(self.settingsWindow, text="Edit Details")  # Implement the command as needed
+        btnEditDetails = ttk.Button(self.settingsWindow, text="Edit Details [Soon]")  # Implement the command as needed
         btnEditDetails.pack(pady=5)
 
         btnDeleteAccount = ttk.Button(self.settingsWindow, text="Delete Account", command=self.confirmDeleteAccount)
@@ -502,10 +502,12 @@ class PassManger(tk.Frame):
         self.clearSettingsWindow()
         foundUser = data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])
 
+        foundUID = lastLoggedUser['LastLogDict']['lastLoggedUser'] # We fetch the UID so that we dont have to do shitty bloated logic in the database.
+
         self.lblConfirmation = ttk.Label(self.settingsWindow, text=f"Are you sure you want to delete your account, {foundUser}?")
         self.lblConfirmation.pack(pady=10)
 
-        self.btnYes = ttk.Button(self.settingsWindow, text="Delete account", command=lambda: self.deleteAccount(foundUser))
+        self.btnYes = ttk.Button(self.settingsWindow, text="Delete account", command=lambda: self.deleteAccount(foundUID))
                                 
         self.btnYes.pack(pady=5)
 
