@@ -220,7 +220,7 @@ class PassData():
                 c.execute('''INSERT INTO Passwords (owner, service, password, username) VALUES (?,?,?,?)''', [owner, service, password, username])
                 self.db.commit()
 
-    def deleteUser(self):
+    def deleteUser(self, name):
         pass #! MAKE SURE IT ALSO DELETES ALL THE PASSWORDS ASSOCIATED TO THE SAME USER
 
     def deletePassword(self, service):
