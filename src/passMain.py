@@ -245,7 +245,8 @@ class PassManger(tk.Frame):
         if len(self.data.accountIssue) != 0: #* Failed login, update labels to maintain user info on entries and display error msg.
             self.updateLabels()
         else: #* Successful login, update the entire window.
-            self.updateLoginWindow()
+            self.buildMainWindow() #* We just logged in, no need to retype pasword
+            #self.updateLoginWindow()
             self.passwordEntry.delete(0, tk.END) #* Clear the entry so that it doesnt carry over Buhh
             self.userNameEntry.delete(0, tk.END)
 
@@ -323,7 +324,13 @@ class PassManger(tk.Frame):
     #! 😔
 
     def buildUIStart1(self): 
-        self.alzheimers()
+        try:
+            self.alzheimers()
+        except:
+            print("Called from deletion request, clearing both things")
+            self.settingsWindow.destroy()
+            self.alzheimers()
+        
         self.Frame = tk.Frame(self)
         self.Frame.grid(column=0, row=0)
 
@@ -468,10 +475,10 @@ class PassManger(tk.Frame):
         self.btnDelPassword.grid(column=0, row=7, padx=(100,0))
 
         self.btnLockVault = ttk.Button(self.Frame, text="Lock vault", command=self.loggedInNoVaultWindow)
-        self.btnLockVault.grid(column=2, row=7, padx=(10, 20))
+        self.btnLockVault.grid(column=1, row=7, padx=(100, 20))
 
         self.btnUserSettings = ttk.Button(self.Frame, text="User Settings", command=self.openUserSettings)
-        self.btnUserSettings.grid(column=1, row=7, padx=(10, 10))
+        self.btnUserSettings.grid(column=1, row=7, padx=(0, 100))
 
         self.pack()
         self.updateLabels()
