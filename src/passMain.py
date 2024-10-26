@@ -462,14 +462,29 @@ class PassManger(tk.Frame):
         self.btnLockVault = ttk.Button(self.Frame, text="Lock vault", command=self.loggedInNoVaultWindow)
         self.btnLockVault.grid(column=2, row=7, padx=(10, 20))
 
-        self.btnUserSettings = ttk.Button(self.Frame, text="User Settings" ) #command=self.openUserSettings
+        self.btnUserSettings = ttk.Button(self.Frame, text="User Settings", command=self.openUserSettings)
         self.btnUserSettings.grid(column=1, row=7, padx=(10, 10))
 
         self.pack()
         self.updateLabels()
 
 
+    def openUserSettings(self):
+        settingsWindow = tk.Toplevel(self)
+        settingsWindow.title("User Settings")
+        
 
+        lblUserSettings = ttk.Label(settingsWindow, text=f"User Settings for account: {data.getUserFromID(lastLoggedUser['LastLogDict']['lastLoggedUser'])}")#, font=("Arial", 16))
+        lblUserSettings.pack(pady=10, padx=50)
+
+        btnEditDetails = ttk.Button(settingsWindow, text="Edit Details")#, command=self.editUserDetails)
+        btnEditDetails.pack(pady=5)
+
+        btnDeleteAccount = ttk.Button(settingsWindow, text="Delete Account") #, command=self.confirmDeleteAccount)
+        btnDeleteAccount.pack(pady=5)
+
+        btnClose = ttk.Button(settingsWindow, text="Close")#, command=settings_window.destroy)
+        btnClose.pack(pady=20)
 
     def buildServiceAddition(self):
         self.alzheimers()
