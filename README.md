@@ -1,5 +1,7 @@
-I don't plan on updating this one any further.
-I had the motivation but busy with other things atm.(ง •_•)ง
+For [portfolio](https://averyden.github.io) (ง •_•)ง
 
-All in all just a very simple password manager program, utilizing SQLite and TKinter.
+
+![pasman](https://github.com/user-attachments/assets/227ac12a-587e-4a10-8c54-35f9654be799)
+
+A very simple password manager program, utilizing SQLite and TKinter.
 The database is in plain text tho sooo, its not really a useable one (●'◡'●)
